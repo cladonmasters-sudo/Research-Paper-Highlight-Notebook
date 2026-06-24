@@ -415,20 +415,124 @@ async function exportData() {
     link.click();
 }
 
-function generateCitation() {
-    const author = document.getElementById("citeAuthor").value;
-    const year = document.getElementById("citeYear").value;
-    const title = document.getElementById("citeTitle").value;
-    const journal = document.getElementById("citeJournal").value;
-    const volume = document.getElementById("citeVolume").value;
-    const issue = document.getElementById("citeIssue").value;
-    const pages = document.getElementById("citePages").value;
-    const doi = document.getElementById("citeDOI").value;
+function getCitationFields() {
+    const referenceAuthor = document.getElementById("citeAuthor").value.trim();
+    const shortAuthor = document.getElementById("citeShortAuthor").value.trim();
+    const year = document.getElementById("citeYear").value.trim().replace(/[()]/g, "");
+    const title = document.getElementById("citeTitle").value.trim();
+    const journal = document.getElementById("citeJournal").value.trim();
+    const volume = document.getElementById("citeVolume").value.trim();
+    const issue = document.getElementById("citeIssue").value.trim();
+    let pages = document.getElementById("citePages").value.trim();
+    const doi = document.getElementById("citeDOI").value.trim();
+    const quote = document.getElementById("quoteText").value.trim();
+    const page = document.getElementById("citePage").value.trim();
 
-    const citation =
-        `${author} (${year}). ${title}. ${journal}, ${volume}(${issue}), ${pages}. ${doi}`;
+    if (pages.toLowerCase().startsWith("pp.")) {
+        pages = pages.replace(/pp\./i, "").trim();
+    }
+
+    return {
+        referenceAuthor,
+        shortAuthor,
+        year,
+        title,
+        journal,
+        volume,
+        issue,
+        pages,
+        doi,
+        quote,
+        page
+    };
+}
+
+function generateReferenceCitation() {
+    const data = getCitationFields();
+
+    let citation = "";
+
+    citation += data.referenceAuthor ? data.referenceAuthor + " " : "";
+    citation += data.year ? "(" + data.year + "). " : "(n.d.). ";
+    citation += data.title ? data.title.replace(/\.+$/, "") + ". " : "";
+    citation += data.journal ? data.journal.replace(/\.+$/, "") : "";
+
+    if (data.volume) {
+        citation += ", " + data.volume;
+
+        if (data.issue) {
+            citation += "(" + data.issue + ")";
+        }
+    }
+
+    if (data.pages) {
+        citation += ", " + data.pages;
+    }
+
+    citation += ".";
+
+    if (data.doi) {
+        citation += " " + data.doi;
+    }
 
     document.getElementById("citationOutput").value = citation;
+}
+
+function generateNarrativeCitation() {
+    const data = getCitationFields();
+
+    const author = data.shortAuthor || "[Author]";
+    const year = data.year || "n.d.";
+    const pagePart = data.page ? ` (p. ${data.page})` : "";
+    const idea = data.quote || "[insert paraphrased idea here]";
+
+    const citation =
+        `${author} (${year}) stated that ${idea}${pagePart}.`;
+
+    document.getElementById("citationOutput").value = citation;
+}
+
+function generateParentheticalCitation() {
+    const data = getCitationFields();
+
+    const author = data.shortAuthor || "[Author]";
+    const year = data.year || "n.d.";
+    const pagePart = data.page ? `, p. ${data.page}` : "";
+    const idea = data.quote || "[insert paraphrased idea here]";
+
+    const citation =
+        `${idea} (${author}, ${year}${pagePart}).`;
+
+    document.getElementById("citationOutput").value = citation;
+}
+
+function generateDirectQuoteCitation() {
+    const data = getCitationFields();
+
+    const author = data.shortAuthor || "[Author]";
+    const year = data.year || "n.d.";
+    const pagePart = data.page ? `, p. ${data.page}` : "";
+    const quote = data.quote || "Insert exact quote here";
+
+    const citation =
+        `"${quote}" (${author}, ${year}${pagePart}).`;
+
+    document.getElementById("citationOutput").value = citation;
+}
+
+function clearCitationFields() {
+    document.getElementById("citeAuthor").value = "";
+    document.getElementById("citeShortAuthor").value = "";
+    document.getElementById("citeYear").value = "";
+    document.getElementById("citeTitle").value = "";
+    document.getElementById("citeJournal").value = "";
+    document.getElementById("citeVolume").value = "";
+    document.getElementById("citeIssue").value = "";
+    document.getElementById("citePages").value = "";
+    document.getElementById("citeDOI").value = "";
+    document.getElementById("quoteText").value = "";
+    document.getElementById("citePage").value = "";
+    document.getElementById("citationOutput").value = "";
 }
 
 displayNotes();
