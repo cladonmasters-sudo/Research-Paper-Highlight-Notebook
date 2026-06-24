@@ -88,7 +88,8 @@
 
         <h2>APA 7 Citation Generator</h2>
 
-        <input type="text" id="citeAuthor" placeholder="Author(s)">
+        <input type="text" id="citeAuthor" placeholder="Reference Author(s), e.g., Chong, J. P. W., & Graham, L. J.">
+        <input type="text" id="citeShortAuthor" placeholder="In-text Author(s), e.g., Chong & Graham">
         <input type="text" id="citeYear" placeholder="Year">
         <input type="text" id="citeTitle" placeholder="Article Title">
         <input type="text" id="citeJournal" placeholder="Journal Name">
@@ -97,9 +98,16 @@
         <input type="text" id="citePages" placeholder="Pages">
         <input type="text" id="citeDOI" placeholder="DOI or URL">
 
-        <button onclick="generateCitation()">Generate APA Citation</button>
+        <textarea id="quoteText" placeholder="Paste specific sentence or direct quote here..."></textarea>
+        <input type="text" id="citePage" placeholder="Page Number">
 
-        <textarea id="citationOutput" placeholder="Generated APA citation will appear here..." readonly></textarea>
+        <button onclick="generateReferenceCitation()">Generate Reference List Citation</button>
+        <button onclick="generateNarrativeCitation()">Generate Narrative Citation</button>
+        <button onclick="generateParentheticalCitation()">Generate Parenthetical Citation</button>
+        <button onclick="generateDirectQuoteCitation()">Generate Direct Quote Citation</button>
+        <button onclick="clearCitationFields()">Clear Citation Fields</button>
+
+        <textarea id="citationOutput" placeholder="Generated citation will appear here..." readonly></textarea>
     </div>
 
 </div>
