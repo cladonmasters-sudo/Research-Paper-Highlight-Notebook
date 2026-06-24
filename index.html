@@ -7,18 +7,38 @@
 <body>
 
 <h1>Research Paper Notebook</h1>
-<p>Upload a PDF research paper.</p>
 
 <input type="file" id="pdfUpload" accept=".pdf">
 
-<div id="viewer">
-    PDF content will appear here.
+<div class="container">
+    <div class="pdf-section">
+        <h2>PDF Reader</h2>
+        <div id="viewer">Upload a PDF to begin.</div>
+    </div>
+
+    <div class="notes-section">
+        <h2>Research Notebook</h2>
+
+        <select id="category">
+            <option>Introduction</option>
+            <option>Literature Review</option>
+            <option>Methodology</option>
+            <option>Findings</option>
+            <option>Discussion</option>
+            <option>Conclusion</option>
+            <option>Personal Notes</option>
+        </select>
+
+        <textarea id="noteInput" placeholder="Type or paste your notes here..."></textarea>
+
+        <button onclick="saveNote()">Save Note</button>
+        <button onclick="clearNotes()">Clear Notes</button>
+
+        <h3>Saved Notes</h3>
+        <div id="notesList"></div>
+    </div>
 </div>
 
-<h2>Highlights</h2>
-<ul id="notesList"></ul>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="script.js"></script>
 
 </body>
