@@ -1,6 +1,5 @@
 const fileInput = document.getElementById("pdfUpload");
 const viewer = document.getElementById("viewer");
-const notesList = document.getElementById("notesList");
 
 fileInput.addEventListener("change", function (event) {
     const file = event.target.files[0];
@@ -23,36 +22,49 @@ function saveNote() {
         return;
     }
 
-    const note = document.createElement("div");
-    note.className = "note-card";
+    let notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
 
-    note.innerHTML = `
-        <strong>${category}</strong>
-        <p>${noteText}</p>
-    `;
+    if (!notes[category]) {
+        notes[category] = [];
+    }
 
-    notesList.appendChild(note);
+    notes[category].push(noteText);
 
-    localStorage.setItem(
-        "researchNotes",
-        notesList.innerHTML
-    );
+    localStorage.setItem("researchNotes", JSON.stringify(notes));
 
     document.getElementById("noteInput").value = "";
+
+    displayNotes();
+}
+
+function displayNotes() {
+    const notesList = document.getElementById("notesList");
+    const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
+
+    notesList.innerHTML = "";
+
+    for (const category in notes) {
+        const section = document.createElement("div");
+        section.className = "note-card";
+
+        let items = notes[category]
+            .map(note => `<li>${note}</li>`)
+            .join("");
+
+        section.innerHTML = `
+            <h4>${category}</h4>
+            <ul>${items}</ul>
+        `;
+
+        notesList.appendChild(section);
+    }
 }
 
 function clearNotes() {
     if (confirm("Clear all notes?")) {
-        notesList.innerHTML = "";
         localStorage.removeItem("researchNotes");
+        displayNotes();
     }
 }
 
-window.onload = function () {
-    const savedNotes =
-        localStorage.getItem("researchNotes");
-
-    if (savedNotes) {
-        notesList.innerHTML = savedNotes;
-    }
-};
+displayNotes();
