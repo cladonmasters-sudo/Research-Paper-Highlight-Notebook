@@ -50,12 +50,14 @@ button {
 
 .toolbar {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
     margin-top: 10px;
 }
 
 .toolbar button {
-    width: auto;
+    width: auto !important;
+    min-width: 45px;
     padding: 6px 10px;
     margin-top: 0;
 }
@@ -96,6 +98,35 @@ button {
     padding-left: 25px;
 }
 
+.note-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.note-actions button {
+    width: auto;
+    padding: 6px 10px;
+    margin-top: 0;
+}
+
+.edit-btn {
+    background: #ffc107;
+    border: none;
+}
+
+.delete-note-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+#cancelEditBtn {
+    background: #6c757d;
+    color: white;
+    border: none;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -127,17 +158,4 @@ th {
 
 #citationOutput {
     height: 120px;
-}
-.toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 10px;
-}
-
-.toolbar button {
-    width: auto !important;
-    min-width: 45px;
-    padding: 6px 10px;
-    margin-top: 0;
 }
