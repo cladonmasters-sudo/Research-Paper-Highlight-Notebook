@@ -12,7 +12,35 @@ fileInput.addEventListener("change", function (event) {
     const fileURL = URL.createObjectURL(file);
 
     viewer.innerHTML = `<iframe src="${fileURL}"></iframe>`;
+
+    let articlesReviewed =
+        Number(localStorage.getItem("articlesReviewed")) || 0;
+
+    articlesReviewed++;
+
+    localStorage.setItem("articlesReviewed", articlesReviewed);
+
+    updateDashboard();
 });
+
+function updateDashboard() {
+    const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
+    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+    const citations = JSON.parse(localStorage.getItem("savedCitations")) || [];
+    const articlesReviewed =
+        Number(localStorage.getItem("articlesReviewed")) || 0;
+
+    let notesCount = 0;
+
+    for (const category in notes) {
+        notesCount += notes[category].length;
+    }
+
+    document.getElementById("articlesCount").innerText = articlesReviewed;
+    document.getElementById("notesCount").innerText = notesCount;
+    document.getElementById("matrixCount").innerText = matrix.length;
+    document.getElementById("citationsCount").innerText = citations.length;
+}
 
 function openTab(tabId) {
     const tabs = document.querySelectorAll(".tab-content");
@@ -56,6 +84,7 @@ function saveNote() {
     noteInput.innerHTML = "";
 
     displayNotes();
+    updateDashboard();
 }
 
 function displayNotes() {
@@ -123,6 +152,7 @@ function deleteNote(category, index) {
     localStorage.setItem("researchNotes", JSON.stringify(notes));
 
     displayNotes();
+    updateDashboard();
 }
 
 function cancelEdit() {
@@ -144,6 +174,7 @@ function clearNotes() {
         document.getElementById("noteInput").innerHTML = "";
         resetEditMode();
         displayNotes();
+        updateDashboard();
     }
 }
 
@@ -181,6 +212,7 @@ function addMatrixEntry() {
     document.getElementById("relevance").value = "";
 
     displayMatrix();
+    updateDashboard();
 }
 
 function displayMatrix() {
@@ -231,6 +263,7 @@ function deleteMatrixEntry(index) {
         matrix.splice(index, 1);
         localStorage.setItem("researchMatrix", JSON.stringify(matrix));
         displayMatrix();
+        updateDashboard();
     }
 }
 
@@ -238,6 +271,7 @@ function clearMatrix() {
     if (confirm("Delete all matrix entries?")) {
         localStorage.removeItem("researchMatrix");
         displayMatrix();
+        updateDashboard();
     }
 }
 
@@ -550,6 +584,7 @@ function saveCitation() {
     );
 
     displaySavedCitations();
+    updateDashboard();
     openTab("citationsTab");
 }
 
@@ -605,12 +640,14 @@ function deleteCitation(index) {
     );
 
     displaySavedCitations();
+    updateDashboard();
 }
 
 function clearSavedCitations() {
     if (confirm("Delete all saved citations?")) {
         localStorage.removeItem("savedCitations");
         displaySavedCitations();
+        updateDashboard();
     }
 }
 
@@ -632,3 +669,4 @@ function clearCitationFields() {
 displayNotes();
 displayMatrix();
 displaySavedCitations();
+updateDashboard();
