@@ -11,9 +11,14 @@ fileInput.addEventListener("change", function (event) {
     viewer.innerHTML = `<iframe src="${fileURL}"></iframe>`;
 });
 
+function formatText(command) {
+    document.execCommand(command, false, null);
+}
+
 function saveNote() {
     const category = document.getElementById("category").value;
-    const noteText = document.getElementById("noteInput").value.trim();
+    const noteInput = document.getElementById("noteInput");
+    const noteText = noteInput.innerHTML.trim();
 
     if (!noteText) {
         alert("Please enter a note.");
@@ -30,7 +35,7 @@ function saveNote() {
 
     localStorage.setItem("researchNotes", JSON.stringify(notes));
 
-    document.getElementById("noteInput").value = "";
+    noteInput.innerHTML = "";
 
     displayNotes();
 }
@@ -45,12 +50,14 @@ function displayNotes() {
         const section = document.createElement("div");
         section.className = "note-card";
 
-        section.innerHTML = `
-            <h4>${category}</h4>
-            <ul>
-                ${notes[category].map(note => `<li>${note}</li>`).join("")}
-            </ul>
-        `;
+        section.innerHTML = `<h4>${category}</h4>`;
+
+        notes[category].forEach(note => {
+            const savedNote = document.createElement("div");
+            savedNote.className = "saved-note";
+            savedNote.innerHTML = note;
+            section.appendChild(savedNote);
+        });
 
         notesList.appendChild(section);
     }
@@ -238,11 +245,13 @@ async function exportData() {
         );
 
         notes[category].forEach(note => {
+            const plainNote = note.replace(/<[^>]*>?/gm, " ");
+
             children.push(
                 new Paragraph({
                     children: [
                         new TextRun({
-                            text: "• " + note,
+                            text: "• " + plainNote,
                             size: 22
                         })
                     ]
@@ -340,10 +349,7 @@ async function exportData() {
     link.click();
 }
 
-displayNotes();
-displayMatrix();
 function generateCitation() {
-
     const author = document.getElementById("citeAuthor").value;
     const year = document.getElementById("citeYear").value;
     const title = document.getElementById("citeTitle").value;
@@ -354,7 +360,10 @@ function generateCitation() {
     const doi = document.getElementById("citeDOI").value;
 
     const citation =
-`${author} (${year}). ${title}. ${journal}, ${volume}(${issue}), ${pages}. ${doi}`;
+        `${author} (${year}). ${title}. ${journal}, ${volume}(${issue}), ${pages}. ${doi}`;
 
     document.getElementById("citationOutput").value = citation;
 }
+
+displayNotes();
+displayMatrix();
