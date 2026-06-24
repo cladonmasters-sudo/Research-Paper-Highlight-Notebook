@@ -6,26 +6,26 @@ body {
 
 .dashboard {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
     margin-bottom: 20px;
 }
 
 .dash-card {
     background: white;
     border: 1px solid #ccc;
-    padding: 15px;
+    padding: 12px;
     text-align: center;
 }
 
 .dash-card h3 {
     margin: 0;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .dash-card p {
     margin: 5px 0 0;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .container {
@@ -55,7 +55,7 @@ iframe {
 
 .tabs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 5px;
     margin-bottom: 15px;
 }
@@ -132,6 +132,26 @@ button {
     margin-top: 10px;
     background: white;
     white-space: pre-wrap;
+}
+
+.note-important {
+    background: #fff8c6;
+    border-left-color: #ffc107;
+}
+
+.note-methodology {
+    background: #dceeff;
+    border-left-color: #007bff;
+}
+
+.note-finding {
+    background: #ddf7df;
+    border-left-color: #28a745;
+}
+
+.note-quote {
+    background: #ffe1f0;
+    border-left-color: #d63384;
 }
 
 .favorite-card {
@@ -231,14 +251,27 @@ th {
     height: 160px;
 }
 
-#literatureReviewOutput {
+#literatureReviewOutput,
+#researchGapOutput {
     height: 400px;
     white-space: pre-wrap;
+}
+
+#theoreticalFramework,
+#conceptualFramework,
+#relatedLiterature,
+#relatedStudies,
+#gapAnalysis {
+    height: 160px;
 }
 
 @media (max-width: 900px) {
     .container,
     .dashboard {
         grid-template-columns: 1fr;
+    }
+
+    .tabs {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
