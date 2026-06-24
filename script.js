@@ -1,51 +1,60 @@
 const fileInput = document.getElementById("pdfUpload");
 const viewer = document.getElementById("viewer");
-
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const notesList = document.getElementById("notesList");
 
 fileInput.addEventListener("change", function (event) {
   const file = event.target.files[0];
 
-  if (!file || file.type !== "application/pdf") {
-    viewer.innerHTML = "Please upload a valid PDF file.";
+  if (!file) {
+    viewer.innerHTML = "No file selected.";
     return;
   }
 
-  const reader = new FileReader();
+  const fileURL = URL.createObjectURL(file);
 
-  reader.onload = function () {
-    const typedArray = new Uint8Array(this.result);
-
-    pdfjsLib.getDocument(typedArray).promise.then(function (pdf) {
-      viewer.innerHTML = "";
-
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        renderPage(pdf, pageNum);
-      }
-    });
-  };
-
-  reader.readAsArrayBuffer(file);
+  viewer.innerHTML = `
+    <iframe src="${fileURL}"></iframe>
+  `;
 });
 
-function renderPage(pdf, pageNum) {
-  pdf.getPage(pageNum).then(function (page) {
-    const scale = 1.3;
-    const viewport = page.getViewport({ scale });
+function saveNote() {
+  const category = document.getElementById("category").value;
+  const noteInput = document.getElementById("noteInput");
+  const noteText = noteInput.value.trim();
 
-    const canvas = document.createElement("canvas");
-    canvas.className = "pdf-page";
+  if (!noteText) {
+    alert("Please type or paste a note first.");
+    return;
+  }
 
-    const context = canvas.getContext("2d");
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
+  const note = document.createElement("div");
+  note.className = "note-card";
+  note.innerHTML = `<strong>${category}</strong><p>${noteText}</p>`;
 
-    viewer.appendChild(canvas);
+  notesList.appendChild(note);
 
-    page.render({
-      canvasContext: context,
-      viewport: viewport
-    });
-  });
+  saveToLocalStorage();
+
+  noteInput.value = "";
 }
+
+function saveToLocalStorage() {
+  localStorage.setItem("researchNotes", notesList.innerHTML);
+}
+
+function loadNotes() {
+  const savedNotes = localStorage.getItem("researchNotes");
+
+  if (savedNotes) {
+    notesList.innerHTML = savedNotes;
+  }
+}
+
+function clearNotes() {
+  if (confirm("Are you sure you want to clear all notes?")) {
+    notesList.innerHTML = "";
+    localStorage.removeItem("researchNotes");
+  }
+}
+
+loadNotes();
