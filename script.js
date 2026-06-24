@@ -302,6 +302,24 @@ async function exportData() {
     link.download = "ResearchNotebook.docx";
     link.click();
 }
+function sortMatrixByAuthor() {
+    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
+    matrix.sort((a, b) => a.author.localeCompare(b.author));
+
+    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
+
+    displayMatrix();
+}
+
+function sortMatrixByYear() {
+    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    matrix.sort((a, b) => Number(a.year) - Number(b.year));
+
+    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
+
+    displayMatrix();
+}
 displayNotes();
 displayMatrix();
