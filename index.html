@@ -1,76 +1,163 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Research Paper Notebook</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+const fileInput = document.getElementById("pdfUpload");
+const viewer = document.getElementById("viewer");
 
-<h1>Research Paper Notebook</h1>
+fileInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-<input type="file" id="pdfUpload" accept=".pdf">
+    const fileURL = URL.createObjectURL(file);
+    viewer.innerHTML = `<iframe src="${fileURL}"></iframe>`;
+});
 
-<div class="container">
-    <div class="pdf-section">
-        <h2>PDF Reader</h2>
-        <div id="viewer">Upload a PDF to begin.</div>
-    </div>
+function saveNote() {
+    const category = document.getElementById("category").value;
+    const noteText = document.getElementById("noteInput").value.trim();
 
-    <div class="notes-section">
-        <h2>Research Notebook</h2>
+    if (!noteText) {
+        alert("Please enter a note.");
+        return;
+    }
 
-        <select id="category">
-            <option>Introduction</option>
-            <option>Literature Review</option>
-            <option>Methodology</option>
-            <option>Findings</option>
-            <option>Discussion</option>
-            <option>Conclusion</option>
-            <option>Personal Notes</option>
-        </select>
+    let notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
 
-        <textarea id="noteInput" placeholder="Type or paste your notes here..."></textarea>
+    if (!notes[category]) {
+        notes[category] = [];
+    }
 
-        <button onclick="saveNote()">Save Note</button>
-        <button onclick="clearNotes()">Clear Notes</button>
+    notes[category].push(noteText);
+    localStorage.setItem("researchNotes", JSON.stringify(notes));
 
-        <h3>Saved Notes</h3>
-        <div id="notesList"></div>
+    document.getElementById("noteInput").value = "";
+    displayNotes();
+}
 
-        <hr>
+function displayNotes() {
+    const notesList = document.getElementById("notesList");
+    const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
 
-        <h2>Research Matrix</h2>
+    notesList.innerHTML = "";
 
-        <input type="text" id="author" placeholder="Author">
-        <input type="text" id="year" placeholder="Year">
-        <input type="text" id="purpose" placeholder="Purpose of Study">
-        <input type="text" id="method" placeholder="Research Method">
+    for (const category in notes) {
+        const section = document.createElement("div");
+        section.className = "note-card";
 
-        <textarea id="findings" placeholder="Key Findings"></textarea>
-        <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
+        section.innerHTML = `
+            <h4>${category}</h4>
+            <ul>
+                ${notes[category].map(note => `<li>${note}</li>`).join("")}
+            </ul>
+        `;
 
-        <button onclick="addMatrixEntry()">Add Matrix Entry</button>
+        notesList.appendChild(section);
+    }
+}
 
-        <table id="matrixTable" border="1">
-            <thead>
-                <tr>
-                    <th>Author</th>
-                    <th>Year</th>
-                    <th>Purpose</th>
-                    <th>Method</th>
-                    <th>Findings</th>
-                    <th>Relevance</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
+function clearNotes() {
+    if (confirm("Clear all notes?")) {
+        localStorage.removeItem("researchNotes");
+        displayNotes();
+    }
+}
 
-<script src="script.js"></script>
+function addMatrixEntry() {
+    const author = document.getElementById("author").value.trim();
+    const year = document.getElementById("year").value.trim();
+    const purpose = document.getElementById("purpose").value.trim();
+    const method = document.getElementById("method").value.trim();
+    const findings = document.getElementById("findings").value.trim();
+    const relevance = document.getElementById("relevance").value.trim();
 
-</body>
-</html>
-<button onclick="exportData()">
-Export Research Data
-</button>
+    if (!author) {
+        alert("Please enter an author.");
+        return;
+    }
+
+    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    matrix.push({
+        author,
+        year,
+        purpose,
+        method,
+        findings,
+        relevance
+    });
+
+    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
+
+    document.getElementById("author").value = "";
+    document.getElementById("year").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("method").value = "";
+    document.getElementById("findings").value = "";
+    document.getElementById("relevance").value = "";
+
+    displayMatrix();
+}
+
+function displayMatrix() {
+    const tbody = document.querySelector("#matrixTable tbody");
+
+    if (!tbody) return;
+
+    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    tbody.innerHTML = "";
+
+    matrix.forEach(item => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${item.author}</td>
+            <td>${item.year}</td>
+            <td>${item.purpose}</td>
+            <td>${item.method}</td>
+            <td>${item.findings}</td>
+            <td>${item.relevance}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+function exportData() {
+    const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
+    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    let content = "RESEARCH NOTES\n";
+    content += "====================\n\n";
+
+    for (const category in notes) {
+        content += category + "\n";
+        content += "--------------------\n";
+
+        notes[category].forEach(note => {
+            content += "- " + note + "\n";
+        });
+
+        content += "\n";
+    }
+
+    content += "\nRESEARCH MATRIX\n";
+    content += "====================\n\n";
+
+    matrix.forEach(item => {
+        content += "Author: " + item.author + "\n";
+        content += "Year: " + item.year + "\n";
+        content += "Purpose: " + item.purpose + "\n";
+        content += "Method: " + item.method + "\n";
+        content += "Findings: " + item.findings + "\n";
+        content += "Relevance: " + item.relevance + "\n";
+        content += "--------------------\n";
+    });
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "ResearchNotebook.txt";
+    link.click();
+}
+
+displayNotes();
+displayMatrix();
