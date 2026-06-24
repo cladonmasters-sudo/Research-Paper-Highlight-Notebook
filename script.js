@@ -128,7 +128,7 @@ function displayMatrix() {
 }
 
 function deleteMatrixEntry(index) {
-    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
     if (confirm("Delete this matrix entry?")) {
         matrix.splice(index, 1);
@@ -148,12 +148,10 @@ function exportData() {
     const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
     const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
-    let content = "RESEARCH NOTES\n";
-    content += "====================\n\n";
+    let content = "RESEARCH NOTES\n\n";
 
     for (const category in notes) {
         content += category + "\n";
-        content += "--------------------\n";
 
         notes[category].forEach(note => {
             content += "- " + note + "\n";
@@ -162,8 +160,7 @@ function exportData() {
         content += "\n";
     }
 
-    content += "\nRESEARCH MATRIX\n";
-    content += "====================\n\n";
+    content += "\nRESEARCH MATRIX\n\n";
 
     matrix.forEach(item => {
         content += "Author: " + item.author + "\n";
@@ -172,14 +169,18 @@ function exportData() {
         content += "Method: " + item.method + "\n";
         content += "Findings: " + item.findings + "\n";
         content += "Relevance: " + item.relevance + "\n";
-        content += "--------------------\n";
+        content += "----------------------\n";
     });
 
-    const blob = new Blob([content], { type: "text/plain" });
+    const blob = new Blob([content], {
+        type: "text/plain"
+    });
+
     const link = document.createElement("a");
 
     link.href = URL.createObjectURL(blob);
     link.download = "ResearchNotebook.txt";
+
     link.click();
 }
 
