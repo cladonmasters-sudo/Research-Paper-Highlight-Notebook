@@ -17,97 +17,116 @@
         <div id="viewer">Upload a PDF to begin.</div>
     </div>
 
-    <div class="notes-section">
-        <h2>Research Notebook</h2>
+    <div class="right-panel">
 
-        <select id="category">
-            <option>Introduction</option>
-            <option>Literature Review</option>
-            <option>Methodology</option>
-            <option>Findings</option>
-            <option>Discussion</option>
-            <option>Conclusion</option>
-            <option>Personal Notes</option>
-        </select>
-
-        <div class="toolbar">
-            <button onclick="formatText('bold')"><b>B</b></button>
-            <button onclick="formatText('italic')"><i>I</i></button>
-            <button onclick="formatText('underline')"><u>U</u></button>
-            <button onclick="formatText('insertUnorderedList')">• List</button>
-            <button onclick="formatText('insertOrderedList')">1. List</button>
+        <div class="tabs">
+            <button onclick="openTab('notesTab')">Notes</button>
+            <button onclick="openTab('matrixTab')">Matrix</button>
+            <button onclick="openTab('apaTab')">APA</button>
+            <button onclick="openTab('citationsTab')">Saved Citations</button>
         </div>
 
-        <div id="noteInput" contenteditable="true" class="rich-editor"></div>
+        <div id="notesTab" class="tab-content active">
+            <h2>Research Notebook</h2>
 
-        <button onclick="saveNote()" id="saveNoteBtn">Save Note</button>
-        <button onclick="cancelEdit()" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
-        <button onclick="clearNotes()">Clear All Notes</button>
+            <select id="category">
+                <option>Introduction</option>
+                <option>Literature Review</option>
+                <option>Methodology</option>
+                <option>Findings</option>
+                <option>Discussion</option>
+                <option>Conclusion</option>
+                <option>Personal Notes</option>
+            </select>
 
-        <h3>Saved Notes</h3>
-        <div id="notesList"></div>
+            <div class="toolbar">
+                <button onclick="formatText('bold')"><b>B</b></button>
+                <button onclick="formatText('italic')"><i>I</i></button>
+                <button onclick="formatText('underline')"><u>U</u></button>
+                <button onclick="formatText('insertUnorderedList')">• List</button>
+                <button onclick="formatText('insertOrderedList')">1. List</button>
+            </div>
 
-        <hr>
+            <div id="noteInput" contenteditable="true" class="rich-editor"></div>
 
-        <h2>Research Matrix</h2>
+            <button onclick="saveNote()" id="saveNoteBtn">Save Note</button>
+            <button onclick="cancelEdit()" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
+            <button onclick="clearNotes()">Clear All Notes</button>
 
-        <input type="text" id="author" placeholder="Author">
-        <input type="text" id="year" placeholder="Year">
-        <input type="text" id="purpose" placeholder="Purpose of Study">
-        <input type="text" id="method" placeholder="Research Method">
+            <h3>Saved Notes</h3>
+            <div id="notesList"></div>
+        </div>
 
-        <textarea id="findings" placeholder="Key Findings"></textarea>
-        <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
+        <div id="matrixTab" class="tab-content">
+            <h2>Research Matrix</h2>
 
-        <button onclick="addMatrixEntry()">Add Matrix Entry</button>
-        <button onclick="clearMatrix()">Clear Matrix</button>
+            <input type="text" id="author" placeholder="Author">
+            <input type="text" id="year" placeholder="Year">
+            <input type="text" id="purpose" placeholder="Purpose of Study">
+            <input type="text" id="method" placeholder="Research Method">
 
-        <input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
+            <textarea id="findings" placeholder="Key Findings"></textarea>
+            <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
 
-        <button onclick="sortMatrixByAuthor()">Sort by Author</button>
-        <button onclick="sortMatrixByYear()">Sort by Year</button>
+            <button onclick="addMatrixEntry()">Add Matrix Entry</button>
+            <button onclick="clearMatrix()">Clear Matrix</button>
 
-        <table id="matrixTable">
-            <thead>
-                <tr>
-                    <th>Author</th>
-                    <th>Year</th>
-                    <th>Purpose</th>
-                    <th>Method</th>
-                    <th>Findings</th>
-                    <th>Relevance</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+            <input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
 
-        <button onclick="exportData()">Export Research Data to Word</button>
+            <button onclick="sortMatrixByAuthor()">Sort by Author</button>
+            <button onclick="sortMatrixByYear()">Sort by Year</button>
 
-        <hr>
+            <table id="matrixTable">
+                <thead>
+                    <tr>
+                        <th>Author</th>
+                        <th>Year</th>
+                        <th>Purpose</th>
+                        <th>Method</th>
+                        <th>Findings</th>
+                        <th>Relevance</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
 
-        <h2>APA 7 Citation Generator</h2>
+            <button onclick="exportData()">Export Research Data to Word</button>
+        </div>
 
-        <input type="text" id="citeAuthor" placeholder="Reference Author(s), e.g., Chong, J. P. W., & Graham, L. J.">
-        <input type="text" id="citeShortAuthor" placeholder="In-text Author(s), e.g., Chong & Graham">
-        <input type="text" id="citeYear" placeholder="Year">
-        <input type="text" id="citeTitle" placeholder="Article Title">
-        <input type="text" id="citeJournal" placeholder="Journal Name">
-        <input type="text" id="citeVolume" placeholder="Volume">
-        <input type="text" id="citeIssue" placeholder="Issue">
-        <input type="text" id="citePages" placeholder="Pages">
-        <input type="text" id="citeDOI" placeholder="DOI or URL">
+        <div id="apaTab" class="tab-content">
+            <h2>APA 7 Citation Generator</h2>
 
-        <textarea id="quoteText" placeholder="Paste specific sentence or direct quote here..."></textarea>
-        <input type="text" id="citePage" placeholder="Page Number">
+            <input type="text" id="citeAuthor" placeholder="Reference Author(s), e.g., Chong, J. P. W., & Graham, L. J.">
+            <input type="text" id="citeShortAuthor" placeholder="In-text Author(s), e.g., Chong & Graham">
+            <input type="text" id="citeYear" placeholder="Year">
+            <input type="text" id="citeTitle" placeholder="Article Title">
+            <input type="text" id="citeJournal" placeholder="Journal Name">
+            <input type="text" id="citeVolume" placeholder="Volume">
+            <input type="text" id="citeIssue" placeholder="Issue">
+            <input type="text" id="citePages" placeholder="Pages">
+            <input type="text" id="citeDOI" placeholder="DOI or URL">
 
-        <button onclick="generateReferenceCitation()">Generate Reference List Citation</button>
-        <button onclick="generateNarrativeCitation()">Generate Narrative Citation</button>
-        <button onclick="generateParentheticalCitation()">Generate Parenthetical Citation</button>
-        <button onclick="generateDirectQuoteCitation()">Generate Direct Quote Citation</button>
-        <button onclick="clearCitationFields()">Clear Citation Fields</button>
+            <textarea id="quoteText" placeholder="Paste specific sentence or direct quote here..."></textarea>
+            <input type="text" id="citePage" placeholder="Page Number">
 
-        <textarea id="citationOutput" placeholder="Generated citation will appear here..." readonly></textarea>
+            <button onclick="generateReferenceCitation()">Generate Reference List Citation</button>
+            <button onclick="generateNarrativeCitation()">Generate Narrative Citation</button>
+            <button onclick="generateParentheticalCitation()">Generate Parenthetical Citation</button>
+            <button onclick="generateDirectQuoteCitation()">Generate Direct Quote Citation</button>
+
+            <button onclick="saveCitation()">Save Citation</button>
+            <button onclick="clearCitationFields()">Clear Citation Fields</button>
+
+            <textarea id="citationOutput" placeholder="Generated citation will appear here..." readonly></textarea>
+        </div>
+
+        <div id="citationsTab" class="tab-content">
+            <h2>Saved Citations</h2>
+            <div id="savedCitationsList"></div>
+            <button onclick="clearSavedCitations()">Clear All Saved Citations</button>
+        </div>
+
     </div>
 
 </div>
