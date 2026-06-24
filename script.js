@@ -1,6 +1,9 @@
 const fileInput = document.getElementById("pdfUpload");
 const viewer = document.getElementById("viewer");
 
+let editingCategory = null;
+let editingIndex = null;
+
 fileInput.addEventListener("change", function (event) {
     const file = event.target.files[0];
 
@@ -27,11 +30,16 @@ function saveNote() {
 
     let notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
 
-    if (!notes[category]) {
-        notes[category] = [];
-    }
+    if (editingCategory !== null && editingIndex !== null) {
+        notes[editingCategory][editingIndex] = noteText;
+        resetEditMode();
+    } else {
+        if (!notes[category]) {
+            notes[category] = [];
+        }
 
-    notes[category].push(noteText);
+        notes[category].push(noteText);
+    }
 
     localStorage.setItem("researchNotes", JSON.stringify(notes));
 
@@ -52,10 +60,19 @@ function displayNotes() {
 
         section.innerHTML = `<h4>${category}</h4>`;
 
-        notes[category].forEach(note => {
+        notes[category].forEach((note, index) => {
             const savedNote = document.createElement("div");
             savedNote.className = "saved-note";
-            savedNote.innerHTML = note;
+
+            savedNote.innerHTML = `
+                <div>${note}</div>
+
+                <div class="note-actions">
+                    <button class="edit-btn" onclick="editNote('${category}', ${index})">Edit</button>
+                    <button class="delete-note-btn" onclick="deleteNote('${category}', ${index})">Delete</button>
+                </div>
+            `;
+
             section.appendChild(savedNote);
         });
 
@@ -63,9 +80,58 @@ function displayNotes() {
     }
 }
 
+function editNote(category, index) {
+    const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
+    const noteInput = document.getElementById("noteInput");
+
+    noteInput.innerHTML = notes[category][index];
+
+    document.getElementById("category").value = category;
+    document.getElementById("saveNoteBtn").innerText = "Update Note";
+    document.getElementById("cancelEditBtn").style.display = "block";
+
+    editingCategory = category;
+    editingIndex = index;
+
+    noteInput.scrollIntoView({ behavior: "smooth" });
+}
+
+function deleteNote(category, index) {
+    let notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
+
+    if (!confirm("Delete this note?")) {
+        return;
+    }
+
+    notes[category].splice(index, 1);
+
+    if (notes[category].length === 0) {
+        delete notes[category];
+    }
+
+    localStorage.setItem("researchNotes", JSON.stringify(notes));
+
+    displayNotes();
+}
+
+function cancelEdit() {
+    document.getElementById("noteInput").innerHTML = "";
+    resetEditMode();
+}
+
+function resetEditMode() {
+    editingCategory = null;
+    editingIndex = null;
+
+    document.getElementById("saveNoteBtn").innerText = "Save Note";
+    document.getElementById("cancelEditBtn").style.display = "none";
+}
+
 function clearNotes() {
     if (confirm("Clear all notes?")) {
         localStorage.removeItem("researchNotes");
+        document.getElementById("noteInput").innerHTML = "";
+        resetEditMode();
         displayNotes();
     }
 }
