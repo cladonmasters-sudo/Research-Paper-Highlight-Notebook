@@ -1,27 +1,79 @@
-function displayMatrix() {
-    const tbody = document.querySelector("#matrixTable tbody");
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Research Paper Notebook</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-    if (!tbody) return;
+<h1>Research Paper Notebook</h1>
 
-    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+<input type="file" id="pdfUpload" accept=".pdf">
 
-    tbody.innerHTML = "";
+<div class="container">
 
-    matrix.forEach((item, index) => {
-        const row = document.createElement("tr");
+    <div class="pdf-section">
+        <h2>PDF Reader</h2>
+        <div id="viewer">Upload a PDF to begin.</div>
+    </div>
 
-        row.innerHTML = `
-            <td>${item.author}</td>
-            <td>${item.year}</td>
-            <td>${item.purpose}</td>
-            <td>${item.method}</td>
-            <td>${item.findings}</td>
-            <td>${item.relevance}</td>
-            <td>
-                <button onclick="deleteMatrixEntry(${index})">Delete</button>
-            </td>
-        `;
+    <div class="notes-section">
+        <h2>Research Notebook</h2>
 
-        tbody.appendChild(row);
-    });
-}
+        <select id="category">
+            <option>Introduction</option>
+            <option>Literature Review</option>
+            <option>Methodology</option>
+            <option>Findings</option>
+            <option>Discussion</option>
+            <option>Conclusion</option>
+            <option>Personal Notes</option>
+        </select>
+
+        <textarea id="noteInput" placeholder="Type or paste your notes here..."></textarea>
+
+        <button onclick="saveNote()">Save Note</button>
+        <button onclick="clearNotes()">Clear Notes</button>
+
+        <h3>Saved Notes</h3>
+        <div id="notesList"></div>
+
+        <hr>
+
+        <h2>Research Matrix</h2>
+
+        <input type="text" id="author" placeholder="Author">
+        <input type="text" id="year" placeholder="Year">
+        <input type="text" id="purpose" placeholder="Purpose of Study">
+        <input type="text" id="method" placeholder="Research Method">
+
+        <textarea id="findings" placeholder="Key Findings"></textarea>
+        <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
+
+        <button onclick="addMatrixEntry()">Add Matrix Entry</button>
+        <button onclick="clearMatrix()">Clear Matrix</button>
+
+        <table id="matrixTable">
+            <thead>
+                <tr>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Purpose</th>
+                    <th>Method</th>
+                    <th>Findings</th>
+                    <th>Relevance</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <button onclick="exportData()">Export Research Data</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
