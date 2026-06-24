@@ -30,7 +30,15 @@
             <option>Personal Notes</option>
         </select>
 
-        <textarea id="noteInput" placeholder="Type or paste your notes here..."></textarea>
+        <div class="toolbar">
+            <button onclick="formatText('bold')"><b>B</b></button>
+            <button onclick="formatText('italic')"><i>I</i></button>
+            <button onclick="formatText('underline')"><u>U</u></button>
+            <button onclick="formatText('insertUnorderedList')">• List</button>
+            <button onclick="formatText('insertOrderedList')">1. List</button>
+        </div>
+
+        <div id="noteInput" contenteditable="true" class="rich-editor"></div>
 
         <button onclick="saveNote()">Save Note</button>
         <button onclick="clearNotes()">Clear Notes</button>
@@ -57,10 +65,7 @@
 
         <button onclick="sortMatrixByAuthor()">Sort by Author</button>
         <button onclick="sortMatrixByYear()">Sort by Year</button>
-<input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
 
-<button onclick="sortMatrixByAuthor()">Sort by Author</button>
-<button onclick="sortMatrixByYear()">Sort by Year</button>
         <table id="matrixTable">
             <thead>
                 <tr>
@@ -77,31 +82,25 @@
         </table>
 
         <button onclick="exportData()">Export Research Data to Word</button>
+
+        <hr>
+
+        <h2>APA 7 Citation Generator</h2>
+
+        <input type="text" id="citeAuthor" placeholder="Author(s)">
+        <input type="text" id="citeYear" placeholder="Year">
+        <input type="text" id="citeTitle" placeholder="Article Title">
+        <input type="text" id="citeJournal" placeholder="Journal Name">
+        <input type="text" id="citeVolume" placeholder="Volume">
+        <input type="text" id="citeIssue" placeholder="Issue">
+        <input type="text" id="citePages" placeholder="Pages">
+        <input type="text" id="citeDOI" placeholder="DOI or URL">
+
+        <button onclick="generateCitation()">Generate APA Citation</button>
+
+        <textarea id="citationOutput" placeholder="Generated APA citation will appear here..." readonly></textarea>
     </div>
-<input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
 
-<hr>
-
-<h2>APA 7 Citation Generator</h2>
-
-<input type="text" id="citeAuthor" placeholder="Author(s)">
-<input type="text" id="citeYear" placeholder="Year">
-<input type="text" id="citeTitle" placeholder="Article Title">
-<input type="text" id="citeJournal" placeholder="Journal Name">
-<input type="text" id="citeVolume" placeholder="Volume">
-<input type="text" id="citeIssue" placeholder="Issue">
-<input type="text" id="citePages" placeholder="Pages">
-<input type="text" id="citeDOI" placeholder="DOI or URL">
-
-<button onclick="generateCitation()">
-Generate APA Citation
-</button>
-
-<textarea
-id="citationOutput"
-placeholder="Generated APA citation will appear here..."
-readonly>
-</textarea>
 </div>
 
 <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
