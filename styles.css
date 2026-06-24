@@ -77,3 +77,12 @@ td {
 th {
     background: #f0f0f0;
 }
+.notes-section {
+    overflow-x: auto;
+}
+
+#matrixTable button {
+    width: auto;
+    padding: 5px 8px;
+    margin: 0;
+}
