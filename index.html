@@ -52,7 +52,11 @@
 
         <button onclick="addMatrixEntry()">Add Matrix Entry</button>
         <button onclick="clearMatrix()">Clear Matrix</button>
+        
+<input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
 
+<button onclick="sortMatrixByAuthor()">Sort by Author</button>
+<button onclick="sortMatrixByYear()">Sort by Year</button>
         <table id="matrixTable">
             <thead>
                 <tr>
