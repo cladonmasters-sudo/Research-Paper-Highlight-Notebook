@@ -137,3 +137,40 @@ function renderMatrix() {
 }
 
 renderMatrix();
+function exportData() {
+
+    const notes =
+        localStorage.getItem("researchNotes");
+
+    const matrix =
+        localStorage.getItem("researchMatrix");
+
+    const content = `
+RESEARCH NOTES
+========================
+
+${notes}
+
+
+RESEARCH MATRIX
+========================
+
+${matrix}
+`;
+
+    const blob = new Blob(
+        [content],
+        { type: "text/plain" }
+    );
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        URL.createObjectURL(blob);
+
+    link.download =
+        "ResearchNotebook.txt";
+
+    link.click();
+}
