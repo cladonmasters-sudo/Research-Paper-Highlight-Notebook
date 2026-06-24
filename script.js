@@ -105,26 +105,39 @@ function displayMatrix() {
     if (!tbody) return;
 
     const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+    const searchBox = document.getElementById("matrixSearch");
+    const searchText = searchBox ? searchBox.value.toLowerCase() : "";
 
     tbody.innerHTML = "";
 
-    matrix.forEach((item, index) => {
-        const row = document.createElement("tr");
+    matrix
+        .filter(item => {
+            return (
+                String(item.author || "").toLowerCase().includes(searchText) ||
+                String(item.year || "").toLowerCase().includes(searchText) ||
+                String(item.purpose || "").toLowerCase().includes(searchText) ||
+                String(item.method || "").toLowerCase().includes(searchText) ||
+                String(item.findings || "").toLowerCase().includes(searchText) ||
+                String(item.relevance || "").toLowerCase().includes(searchText)
+            );
+        })
+        .forEach((item, index) => {
+            const row = document.createElement("tr");
 
-        row.innerHTML = `
-            <td>${item.author}</td>
-            <td>${item.year}</td>
-            <td>${item.purpose}</td>
-            <td>${item.method}</td>
-            <td>${item.findings}</td>
-            <td>${item.relevance}</td>
-            <td>
-                <button onclick="deleteMatrixEntry(${index})">Delete</button>
-            </td>
-        `;
+            row.innerHTML = `
+                <td>${item.author}</td>
+                <td>${item.year}</td>
+                <td>${item.purpose}</td>
+                <td>${item.method}</td>
+                <td>${item.findings}</td>
+                <td>${item.relevance}</td>
+                <td>
+                    <button onclick="deleteMatrixEntry(${index})">Delete</button>
+                </td>
+            `;
 
-        tbody.appendChild(row);
-    });
+            tbody.appendChild(row);
+        });
 }
 
 function deleteMatrixEntry(index) {
@@ -142,6 +155,30 @@ function clearMatrix() {
         localStorage.removeItem("researchMatrix");
         displayMatrix();
     }
+}
+
+function sortMatrixByAuthor() {
+    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    matrix.sort((a, b) => {
+        return String(a.author || "").localeCompare(String(b.author || ""));
+    });
+
+    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
+
+    displayMatrix();
+}
+
+function sortMatrixByYear() {
+    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    matrix.sort((a, b) => {
+        return Number(a.year || 0) - Number(b.year || 0);
+    });
+
+    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
+
+    displayMatrix();
 }
 
 async function exportData() {
@@ -302,24 +339,6 @@ async function exportData() {
     link.download = "ResearchNotebook.docx";
     link.click();
 }
-function sortMatrixByAuthor() {
-    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
-    matrix.sort((a, b) => a.author.localeCompare(b.author));
-
-    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
-
-    displayMatrix();
-}
-
-function sortMatrixByYear() {
-    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
-
-    matrix.sort((a, b) => Number(a.year) - Number(b.year));
-
-    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
-
-    displayMatrix();
-}
 displayNotes();
 displayMatrix();
