@@ -1,210 +1,160 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background: #f5f5f5;
-}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Research Paper Notebook</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-.container {
-    display: grid;
-    grid-template-columns: 65% 35%;
-    gap: 20px;
-}
+<h1>Research Paper Notebook</h1>
 
-.pdf-section,
-.right-panel {
-    background: white;
-    padding: 15px;
-    border: 1px solid #ccc;
-}
+<div class="dashboard">
+    <div class="dash-card">
+        <h3 id="articlesCount">0</h3>
+        <p>Articles Reviewed</p>
+    </div>
 
-#viewer {
-    height: 850px;
-    border: 1px solid #ccc;
-    overflow: auto;
-}
+    <div class="dash-card">
+        <h3 id="notesCount">0</h3>
+        <p>Notes Saved</p>
+    </div>
 
-iframe {
-    width: 100%;
-    height: 850px;
-    border: none;
-}
+    <div class="dash-card">
+        <h3 id="matrixCount">0</h3>
+        <p>Matrix Entries</p>
+    </div>
 
-.tabs {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-    margin-bottom: 15px;
-}
+    <div class="dash-card">
+        <h3 id="citationsCount">0</h3>
+        <p>Saved Citations</p>
+    </div>
+</div>
 
-.tabs button {
-    padding: 10px;
-    cursor: pointer;
-    font-size: 13px;
-}
+<input type="file" id="pdfUpload" accept=".pdf">
 
-.tab-content {
-    display: none;
-}
+<div class="container">
 
-.tab-content.active {
-    display: block;
-}
+    <div class="pdf-section">
+        <h2>PDF Reader</h2>
+        <div id="viewer">Upload a PDF to begin.</div>
+    </div>
 
-input,
-select,
-textarea,
-button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
+    <div class="right-panel">
 
-textarea {
-    height: 120px;
-}
+        <div class="tabs">
+            <button onclick="openTab('notesTab')">Notes</button>
+            <button onclick="openTab('matrixTab')">Matrix</button>
+            <button onclick="openTab('apaTab')">APA</button>
+            <button onclick="openTab('citationsTab')">Saved Citations</button>
+        </div>
 
-button {
-    cursor: pointer;
-}
+        <div id="notesTab" class="tab-content active">
+            <h2>Research Notebook</h2>
 
-.toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 10px;
-}
+            <select id="category">
+                <option>Introduction</option>
+                <option>Literature Review</option>
+                <option>Methodology</option>
+                <option>Findings</option>
+                <option>Discussion</option>
+                <option>Conclusion</option>
+                <option>Personal Notes</option>
+            </select>
 
-.toolbar button {
-    width: auto !important;
-    min-width: 45px;
-    padding: 6px 10px;
-    margin-top: 0;
-}
+            <div class="toolbar">
+                <button onclick="formatText('bold')"><b>B</b></button>
+                <button onclick="formatText('italic')"><i>I</i></button>
+                <button onclick="formatText('underline')"><u>U</u></button>
+                <button onclick="formatText('insertUnorderedList')">• List</button>
+                <button onclick="formatText('insertOrderedList')">1. List</button>
+            </div>
 
-.rich-editor {
-    min-height: 160px;
-    border: 1px solid #ccc;
-    background: white;
-    padding: 10px;
-    margin-top: 10px;
-    white-space: pre-wrap;
-    outline: none;
-}
+            <div id="noteInput" contenteditable="true" class="rich-editor"></div>
 
-.note-card {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-top: 10px;
-    background: #fafafa;
-}
+            <button onclick="saveNote()" id="saveNoteBtn">Save Note</button>
+            <button onclick="cancelEdit()" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
+            <button onclick="clearNotes()">Clear All Notes</button>
 
-.saved-note {
-    border-left: 3px solid #4CAF50;
-    padding: 10px;
-    margin-top: 10px;
-    background: white;
-    white-space: pre-wrap;
-}
+            <h3>Saved Notes</h3>
+            <div id="notesList"></div>
+        </div>
 
-.saved-note p {
-    margin: 8px 0;
-}
+        <div id="matrixTab" class="tab-content">
+            <h2>Research Matrix</h2>
 
-.saved-note ul,
-.saved-note ol {
-    margin-top: 8px;
-    margin-bottom: 8px;
-    padding-left: 25px;
-}
+            <input type="text" id="author" placeholder="Author">
+            <input type="text" id="year" placeholder="Year">
+            <input type="text" id="purpose" placeholder="Purpose of Study">
+            <input type="text" id="method" placeholder="Research Method">
 
-.note-actions {
-    display: flex;
-    gap: 5px;
-    margin-top: 10px;
-}
+            <textarea id="findings" placeholder="Key Findings"></textarea>
+            <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
 
-.note-actions button {
-    width: auto;
-    padding: 6px 10px;
-    margin-top: 0;
-}
+            <button onclick="addMatrixEntry()">Add Matrix Entry</button>
+            <button onclick="clearMatrix()">Clear Matrix</button>
 
-.edit-btn {
-    background: #ffc107;
-    border: none;
-}
+            <input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
 
-.delete-note-btn {
-    background: #dc3545;
-    color: white;
-    border: none;
-}
+            <button onclick="sortMatrixByAuthor()">Sort by Author</button>
+            <button onclick="sortMatrixByYear()">Sort by Year</button>
 
-#cancelEditBtn {
-    background: #6c757d;
-    color: white;
-    border: none;
-}
+            <table id="matrixTable">
+                <thead>
+                    <tr>
+                        <th>Author</th>
+                        <th>Year</th>
+                        <th>Purpose</th>
+                        <th>Method</th>
+                        <th>Findings</th>
+                        <th>Relevance</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    font-size: 13px;
-}
+            <button onclick="exportData()">Export Research Data to Word</button>
+        </div>
 
-th,
-td {
-    border: 1px solid #ccc;
-    padding: 6px;
-    text-align: left;
-    vertical-align: top;
-}
+        <div id="apaTab" class="tab-content">
+            <h2>APA 7 Citation Generator</h2>
 
-th {
-    background: #f0f0f0;
-}
+            <input type="text" id="citeAuthor" placeholder="Reference Author(s), e.g., Chong, J. P. W., & Graham, L. J.">
+            <input type="text" id="citeShortAuthor" placeholder="In-text Author(s), e.g., Chong & Graham">
+            <input type="text" id="citeYear" placeholder="Year">
+            <input type="text" id="citeTitle" placeholder="Article Title">
+            <input type="text" id="citeJournal" placeholder="Journal Name">
+            <input type="text" id="citeVolume" placeholder="Volume">
+            <input type="text" id="citeIssue" placeholder="Issue">
+            <input type="text" id="citePages" placeholder="Pages">
+            <input type="text" id="citeDOI" placeholder="DOI or URL">
 
-.right-panel {
-    overflow-x: auto;
-    max-height: 900px;
-    overflow-y: auto;
-}
+            <textarea id="quoteText" placeholder="Paste specific sentence or direct quote here..."></textarea>
+            <input type="text" id="citePage" placeholder="Page Number">
 
-#matrixTable button {
-    width: auto;
-    padding: 5px 8px;
-    margin: 0;
-}
+            <button onclick="generateReferenceCitation()">Generate Reference List Citation</button>
+            <button onclick="generateNarrativeCitation()">Generate Narrative Citation</button>
+            <button onclick="generateParentheticalCitation()">Generate Parenthetical Citation</button>
+            <button onclick="generateDirectQuoteCitation()">Generate Direct Quote Citation</button>
 
-#citationOutput {
-    height: 160px;
-}
+            <button onclick="saveCitation()">Save Citation</button>
+            <button onclick="clearCitationFields()">Clear Citation Fields</button>
 
-.citation-card {
-    border-left: 3px solid #007bff;
-    padding: 10px;
-    margin-top: 10px;
-    background: #fafafa;
-    white-space: pre-wrap;
-}
+            <textarea id="citationOutput" placeholder="Generated citation will appear here..." readonly></textarea>
+        </div>
 
-.citation-actions {
-    display: flex;
-    gap: 5px;
-    margin-top: 8px;
-}
+        <div id="citationsTab" class="tab-content">
+            <h2>Saved Citations</h2>
+            <div id="savedCitationsList"></div>
+            <button onclick="clearSavedCitations()">Clear All Saved Citations</button>
+        </div>
 
-.citation-actions button {
-    width: auto;
-    padding: 6px 10px;
-    margin-top: 0;
-}
+    </div>
 
-@media (max-width: 900px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
-}
+</div>
+
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
