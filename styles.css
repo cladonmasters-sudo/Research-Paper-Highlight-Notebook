@@ -5,26 +5,21 @@ body {
 }
 
 .container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 65% 35%;
     gap: 20px;
-    align-items: flex-start;
 }
 
-.pdf-section {
-    width: 65%;
-}
-
+.pdf-section,
 .notes-section {
-    width: 35%;
     background: white;
     padding: 15px;
     border: 1px solid #ccc;
 }
 
 #viewer {
-    background: white;
-    border: 1px solid #ccc;
     height: 800px;
+    border: 1px solid #ccc;
     overflow: auto;
 }
 
@@ -34,18 +29,19 @@ iframe {
     border: none;
 }
 
+input,
 select,
 textarea,
-button,
-input {
+button {
     width: 100%;
     margin-top: 10px;
     padding: 8px;
     box-sizing: border-box;
+    font-size: 14px;
 }
 
 textarea {
-    height: 150px;
+    height: 120px;
 }
 
 button {
@@ -77,6 +73,7 @@ td {
 th {
     background: #f0f0f0;
 }
+
 .notes-section {
     overflow-x: auto;
 }
@@ -85,4 +82,8 @@ th {
     width: auto;
     padding: 5px 8px;
     margin: 0;
+}
+
+#citationOutput {
+    height: 120px;
 }
