@@ -1,6 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    background: #f5f5f5;
 }
 
 .container {
@@ -15,12 +16,13 @@ body {
 
 .notes-section {
     width: 35%;
-    border: 1px solid #ccc;
+    background: white;
     padding: 15px;
-    background: #fafafa;
+    border: 1px solid #ccc;
 }
 
 #viewer {
+    background: white;
     border: 1px solid #ccc;
     height: 800px;
     overflow: auto;
@@ -34,7 +36,8 @@ iframe {
 
 select,
 textarea,
-button {
+button,
+input {
     width: 100%;
     margin-top: 10px;
     padding: 8px;
@@ -42,41 +45,35 @@ button {
 }
 
 textarea {
-    height: 200px;
+    height: 150px;
+}
+
+button {
+    cursor: pointer;
 }
 
 .note-card {
     border: 1px solid #ddd;
     padding: 10px;
     margin-top: 10px;
-    background: white;
+    background: #fafafa;
 }
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-size: 13px;
 }
 
 th,
 td {
     border: 1px solid #ccc;
-    padding: 8px;
+    padding: 6px;
     text-align: left;
     vertical-align: top;
 }
 
 th {
-    background-color: #f0f0f0;
-}
-
-#author,
-#year,
-#purpose,
-#method,
-#findings,
-#relevance {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    box-sizing: border-box;
+    background: #f0f0f0;
 }
