@@ -9,25 +9,11 @@
 <h1>Research Paper Notebook</h1>
 
 <div class="dashboard">
-    <div class="dash-card">
-        <h3 id="articlesCount">0</h3>
-        <p>Articles Reviewed</p>
-    </div>
-
-    <div class="dash-card">
-        <h3 id="notesCount">0</h3>
-        <p>Notes Saved</p>
-    </div>
-
-    <div class="dash-card">
-        <h3 id="matrixCount">0</h3>
-        <p>Matrix Entries</p>
-    </div>
-
-    <div class="dash-card">
-        <h3 id="citationsCount">0</h3>
-        <p>Saved Citations</p>
-    </div>
+    <div class="dash-card"><h3 id="articlesCount">0</h3><p>Articles Reviewed</p></div>
+    <div class="dash-card"><h3 id="notesCount">0</h3><p>Notes Saved</p></div>
+    <div class="dash-card"><h3 id="matrixCount">0</h3><p>Matrix Entries</p></div>
+    <div class="dash-card"><h3 id="favoritesCount">0</h3><p>Favorites</p></div>
+    <div class="dash-card"><h3 id="citationsCount">0</h3><p>Saved Citations</p></div>
 </div>
 
 <input type="file" id="pdfUpload" accept=".pdf">
@@ -44,8 +30,10 @@
         <div class="tabs">
             <button onclick="openTab('notesTab')">Notes</button>
             <button onclick="openTab('matrixTab')">Matrix</button>
+            <button onclick="openTab('favoritesTab')">Favorites</button>
             <button onclick="openTab('apaTab')">APA</button>
-            <button onclick="openTab('citationsTab')">Saved Citations</button>
+            <button onclick="openTab('citationsTab')">Citations</button>
+            <button onclick="openTab('litReviewTab')">Lit Review</button>
         </div>
 
         <div id="notesTab" class="tab-content active">
@@ -86,7 +74,6 @@
             <input type="text" id="year" placeholder="Year">
             <input type="text" id="purpose" placeholder="Purpose of Study">
             <input type="text" id="method" placeholder="Research Method">
-
             <textarea id="findings" placeholder="Key Findings"></textarea>
             <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
 
@@ -101,6 +88,7 @@
             <table id="matrixTable">
                 <thead>
                     <tr>
+                        <th>Fav</th>
                         <th>Author</th>
                         <th>Year</th>
                         <th>Purpose</th>
@@ -114,6 +102,11 @@
             </table>
 
             <button onclick="exportData()">Export Research Data to Word</button>
+        </div>
+
+        <div id="favoritesTab" class="tab-content">
+            <h2>Favorite Articles</h2>
+            <div id="favoritesList"></div>
         </div>
 
         <div id="apaTab" class="tab-content">
@@ -136,7 +129,6 @@
             <button onclick="generateNarrativeCitation()">Generate Narrative Citation</button>
             <button onclick="generateParentheticalCitation()">Generate Parenthetical Citation</button>
             <button onclick="generateDirectQuoteCitation()">Generate Direct Quote Citation</button>
-
             <button onclick="saveCitation()">Save Citation</button>
             <button onclick="clearCitationFields()">Clear Citation Fields</button>
 
@@ -147,6 +139,18 @@
             <h2>Saved Citations</h2>
             <div id="savedCitationsList"></div>
             <button onclick="clearSavedCitations()">Clear All Saved Citations</button>
+        </div>
+
+        <div id="litReviewTab" class="tab-content">
+            <h2>Literature Review Builder</h2>
+
+            <p>This uses your favorite articles first. If no favorites are selected, it uses all matrix entries.</p>
+
+            <button onclick="generateLiteratureReview()">Generate Literature Review Draft</button>
+            <button onclick="copyLiteratureReview()">Copy Draft</button>
+            <button onclick="clearLiteratureReview()">Clear Draft</button>
+
+            <textarea id="literatureReviewOutput" placeholder="Generated literature review draft will appear here..."></textarea>
         </div>
 
     </div>
