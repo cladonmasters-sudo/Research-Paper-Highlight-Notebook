@@ -8,9 +8,7 @@ fileInput.addEventListener("change", function (event) {
 
     const fileURL = URL.createObjectURL(file);
 
-    viewer.innerHTML = `
-        <iframe src="${fileURL}"></iframe>
-    `;
+    viewer.innerHTML = `<iframe src="${fileURL}"></iframe>`;
 });
 
 function saveNote() {
@@ -47,13 +45,11 @@ function displayNotes() {
         const section = document.createElement("div");
         section.className = "note-card";
 
-        let items = notes[category]
-            .map(note => `<li>${note}</li>`)
-            .join("");
-
         section.innerHTML = `
             <h4>${category}</h4>
-            <ul>${items}</ul>
+            <ul>
+                ${notes[category].map(note => `<li>${note}</li>`).join("")}
+            </ul>
         `;
 
         notesList.appendChild(section);
@@ -67,23 +63,20 @@ function clearNotes() {
     }
 }
 
-displayNotes();
 function addMatrixEntry() {
-
-    const author = document.getElementById("author").value;
-    const year = document.getElementById("year").value;
-    const purpose = document.getElementById("purpose").value;
-    const method = document.getElementById("method").value;
-    const findings = document.getElementById("findings").value;
-    const relevance = document.getElementById("relevance").value;
+    const author = document.getElementById("author").value.trim();
+    const year = document.getElementById("year").value.trim();
+    const purpose = document.getElementById("purpose").value.trim();
+    const method = document.getElementById("method").value.trim();
+    const findings = document.getElementById("findings").value.trim();
+    const relevance = document.getElementById("relevance").value.trim();
 
     if (!author) {
         alert("Please enter an author.");
         return;
     }
 
-    const matrix =
-        JSON.parse(localStorage.getItem("researchMatrix")) || [];
+    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
     matrix.push({
         author,
@@ -94,12 +87,7 @@ function addMatrixEntry() {
         relevance
     });
 
-    localStorage.setItem(
-        "researchMatrix",
-        JSON.stringify(matrix)
-    );
-
-    renderMatrix();
+    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
 
     document.getElementById("author").value = "";
     document.getElementById("year").value = "";
@@ -107,20 +95,20 @@ function addMatrixEntry() {
     document.getElementById("method").value = "";
     document.getElementById("findings").value = "";
     document.getElementById("relevance").value = "";
+
+    displayMatrix();
 }
 
-function renderMatrix() {
+function displayMatrix() {
+    const tbody = document.querySelector("#matrixTable tbody");
 
-    const tbody =
-        document.querySelector("#matrixTable tbody");
+    if (!tbody) return;
+
+    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
     tbody.innerHTML = "";
 
-    const matrix =
-        JSON.parse(localStorage.getItem("researchMatrix")) || [];
-
-    matrix.forEach(item => {
-
+    matrix.forEach((item, index) => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
@@ -130,47 +118,70 @@ function renderMatrix() {
             <td>${item.method}</td>
             <td>${item.findings}</td>
             <td>${item.relevance}</td>
+            <td>
+                <button onclick="deleteMatrixEntry(${index})">Delete</button>
+            </td>
         `;
 
         tbody.appendChild(row);
     });
 }
 
-renderMatrix();
+function deleteMatrixEntry(index) {
+    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    if (confirm("Delete this matrix entry?")) {
+        matrix.splice(index, 1);
+        localStorage.setItem("researchMatrix", JSON.stringify(matrix));
+        displayMatrix();
+    }
+}
+
+function clearMatrix() {
+    if (confirm("Delete all matrix entries?")) {
+        localStorage.removeItem("researchMatrix");
+        displayMatrix();
+    }
+}
+
 function exportData() {
+    const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
+    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
-    const notes =
-        localStorage.getItem("researchNotes");
+    let content = "RESEARCH NOTES\n";
+    content += "====================\n\n";
 
-    const matrix =
-        localStorage.getItem("researchMatrix");
+    for (const category in notes) {
+        content += category + "\n";
+        content += "--------------------\n";
 
-    const content = `
-RESEARCH NOTES
-========================
+        notes[category].forEach(note => {
+            content += "- " + note + "\n";
+        });
 
-${notes}
+        content += "\n";
+    }
 
+    content += "\nRESEARCH MATRIX\n";
+    content += "====================\n\n";
 
-RESEARCH MATRIX
-========================
+    matrix.forEach(item => {
+        content += "Author: " + item.author + "\n";
+        content += "Year: " + item.year + "\n";
+        content += "Purpose: " + item.purpose + "\n";
+        content += "Method: " + item.method + "\n";
+        content += "Findings: " + item.findings + "\n";
+        content += "Relevance: " + item.relevance + "\n";
+        content += "--------------------\n";
+    });
 
-${matrix}
-`;
+    const blob = new Blob([content], { type: "text/plain" });
+    const link = document.createElement("a");
 
-    const blob = new Blob(
-        [content],
-        { type: "text/plain" }
-    );
-
-    const link =
-        document.createElement("a");
-
-    link.href =
-        URL.createObjectURL(blob);
-
-    link.download =
-        "ResearchNotebook.txt";
-
+    link.href = URL.createObjectURL(blob);
+    link.download = "ResearchNotebook.txt";
     link.click();
 }
+
+displayNotes();
+displayMatrix();
