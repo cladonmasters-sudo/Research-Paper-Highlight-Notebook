@@ -78,7 +78,30 @@
 
         <button onclick="exportData()">Export Research Data to Word</button>
     </div>
+<input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
 
+<hr>
+
+<h2>APA 7 Citation Generator</h2>
+
+<input type="text" id="citeAuthor" placeholder="Author(s)">
+<input type="text" id="citeYear" placeholder="Year">
+<input type="text" id="citeTitle" placeholder="Article Title">
+<input type="text" id="citeJournal" placeholder="Journal Name">
+<input type="text" id="citeVolume" placeholder="Volume">
+<input type="text" id="citeIssue" placeholder="Issue">
+<input type="text" id="citePages" placeholder="Pages">
+<input type="text" id="citeDOI" placeholder="DOI or URL">
+
+<button onclick="generateCitation()">
+Generate APA Citation
+</button>
+
+<textarea
+id="citationOutput"
+placeholder="Generated APA citation will appear here..."
+readonly>
+</textarea>
 </div>
 
 <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
