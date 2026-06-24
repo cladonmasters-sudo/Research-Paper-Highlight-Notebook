@@ -48,11 +48,52 @@ button {
     cursor: pointer;
 }
 
+.toolbar {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.toolbar button {
+    width: auto;
+    padding: 6px 10px;
+    margin-top: 0;
+}
+
+.rich-editor {
+    min-height: 160px;
+    border: 1px solid #ccc;
+    background: white;
+    padding: 10px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    outline: none;
+}
+
 .note-card {
     border: 1px solid #ddd;
     padding: 10px;
     margin-top: 10px;
     background: #fafafa;
+}
+
+.saved-note {
+    border-left: 3px solid #4CAF50;
+    padding: 10px;
+    margin-top: 10px;
+    background: white;
+    white-space: pre-wrap;
+}
+
+.saved-note p {
+    margin: 8px 0;
+}
+
+.saved-note ul,
+.saved-note ol {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-left: 25px;
 }
 
 table {
