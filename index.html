@@ -36,6 +36,34 @@
 
         <h3>Saved Notes</h3>
         <div id="notesList"></div>
+
+        <hr>
+
+        <h2>Research Matrix</h2>
+
+        <input type="text" id="author" placeholder="Author">
+        <input type="text" id="year" placeholder="Year">
+        <input type="text" id="purpose" placeholder="Purpose of Study">
+        <input type="text" id="method" placeholder="Research Method">
+
+        <textarea id="findings" placeholder="Key Findings"></textarea>
+        <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
+
+        <button onclick="addMatrixEntry()">Add Matrix Entry</button>
+
+        <table id="matrixTable" border="1">
+            <thead>
+                <tr>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Purpose</th>
+                    <th>Method</th>
+                    <th>Findings</th>
+                    <th>Relevance</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 
