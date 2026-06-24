@@ -14,6 +14,16 @@ fileInput.addEventListener("change", function (event) {
     viewer.innerHTML = `<iframe src="${fileURL}"></iframe>`;
 });
 
+function openTab(tabId) {
+    const tabs = document.querySelectorAll(".tab-content");
+
+    tabs.forEach(tab => {
+        tab.classList.remove("active");
+    });
+
+    document.getElementById(tabId).classList.add("active");
+}
+
 function formatText(command) {
     document.execCommand(command, false, null);
 }
@@ -93,6 +103,7 @@ function editNote(category, index) {
     editingCategory = category;
     editingIndex = index;
 
+    openTab("notesTab");
     noteInput.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -520,6 +531,89 @@ function generateDirectQuoteCitation() {
     document.getElementById("citationOutput").value = citation;
 }
 
+function saveCitation() {
+    const citationText = document.getElementById("citationOutput").value.trim();
+
+    if (!citationText) {
+        alert("Generate a citation first.");
+        return;
+    }
+
+    let savedCitations =
+        JSON.parse(localStorage.getItem("savedCitations")) || [];
+
+    savedCitations.push(citationText);
+
+    localStorage.setItem(
+        "savedCitations",
+        JSON.stringify(savedCitations)
+    );
+
+    displaySavedCitations();
+    openTab("citationsTab");
+}
+
+function displaySavedCitations() {
+    const list = document.getElementById("savedCitationsList");
+
+    if (!list) return;
+
+    const savedCitations =
+        JSON.parse(localStorage.getItem("savedCitations")) || [];
+
+    list.innerHTML = "";
+
+    savedCitations.forEach((citation, index) => {
+        const card = document.createElement("div");
+        card.className = "citation-card";
+
+        card.innerHTML = `
+            <div>${citation}</div>
+
+            <div class="citation-actions">
+                <button onclick="copyCitation(${index})">Copy</button>
+                <button onclick="deleteCitation(${index})">Delete</button>
+            </div>
+        `;
+
+        list.appendChild(card);
+    });
+}
+
+function copyCitation(index) {
+    const savedCitations =
+        JSON.parse(localStorage.getItem("savedCitations")) || [];
+
+    navigator.clipboard.writeText(savedCitations[index]);
+
+    alert("Citation copied.");
+}
+
+function deleteCitation(index) {
+    let savedCitations =
+        JSON.parse(localStorage.getItem("savedCitations")) || [];
+
+    if (!confirm("Delete this citation?")) {
+        return;
+    }
+
+    savedCitations.splice(index, 1);
+
+    localStorage.setItem(
+        "savedCitations",
+        JSON.stringify(savedCitations)
+    );
+
+    displaySavedCitations();
+}
+
+function clearSavedCitations() {
+    if (confirm("Delete all saved citations?")) {
+        localStorage.removeItem("savedCitations");
+        displaySavedCitations();
+    }
+}
+
 function clearCitationFields() {
     document.getElementById("citeAuthor").value = "";
     document.getElementById("citeShortAuthor").value = "";
@@ -537,3 +631,4 @@ function clearCitationFields() {
 
 displayNotes();
 displayMatrix();
+displaySavedCitations();
