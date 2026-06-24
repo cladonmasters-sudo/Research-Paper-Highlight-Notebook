@@ -1,188 +1,66 @@
-const fileInput = document.getElementById("pdfUpload");
-const viewer = document.getElementById("viewer");
-
-fileInput.addEventListener("change", function (event) {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    const fileURL = URL.createObjectURL(file);
-
-    viewer.innerHTML = `<iframe src="${fileURL}"></iframe>`;
-});
-
-function saveNote() {
-    const category = document.getElementById("category").value;
-    const noteText = document.getElementById("noteInput").value.trim();
-
-    if (!noteText) {
-        alert("Please enter a note.");
-        return;
-    }
-
-    let notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
-
-    if (!notes[category]) {
-        notes[category] = [];
-    }
-
-    notes[category].push(noteText);
-
-    localStorage.setItem("researchNotes", JSON.stringify(notes));
-
-    document.getElementById("noteInput").value = "";
-
-    displayNotes();
-}
-
-function displayNotes() {
-    const notesList = document.getElementById("notesList");
-    const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
-
-    notesList.innerHTML = "";
-
-    for (const category in notes) {
-        const section = document.createElement("div");
-        section.className = "note-card";
-
-        section.innerHTML = `
-            <h4>${category}</h4>
-            <ul>
-                ${notes[category].map(note => `<li>${note}</li>`).join("")}
-            </ul>
-        `;
-
-        notesList.appendChild(section);
-    }
-}
-
-function clearNotes() {
-    if (confirm("Clear all notes?")) {
-        localStorage.removeItem("researchNotes");
-        displayNotes();
-    }
-}
-
-function addMatrixEntry() {
-    const author = document.getElementById("author").value.trim();
-    const year = document.getElementById("year").value.trim();
-    const purpose = document.getElementById("purpose").value.trim();
-    const method = document.getElementById("method").value.trim();
-    const findings = document.getElementById("findings").value.trim();
-    const relevance = document.getElementById("relevance").value.trim();
-
-    if (!author) {
-        alert("Please enter an author.");
-        return;
-    }
-
-    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
-
-    matrix.push({
-        author,
-        year,
-        purpose,
-        method,
-        findings,
-        relevance
-    });
-
-    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
-
-    document.getElementById("author").value = "";
-    document.getElementById("year").value = "";
-    document.getElementById("purpose").value = "";
-    document.getElementById("method").value = "";
-    document.getElementById("findings").value = "";
-    document.getElementById("relevance").value = "";
-
-    displayMatrix();
-}
-
-function displayMatrix() {
-    const tbody = document.querySelector("#matrixTable tbody");
-
-    if (!tbody) return;
-
-    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
-
-    tbody.innerHTML = "";
-
-    matrix.forEach((item, index) => {
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${item.author}</td>
-            <td>${item.year}</td>
-            <td>${item.purpose}</td>
-            <td>${item.method}</td>
-            <td>${item.findings}</td>
-            <td>${item.relevance}</td>
-            <td>
-                <button onclick="deleteMatrixEntry(${index})">Delete</button>
-            </td>
-        `;
-
-        tbody.appendChild(row);
-    });
-}
-
-function deleteMatrixEntry(index) {
-    let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
-
-    if (confirm("Delete this matrix entry?")) {
-        matrix.splice(index, 1);
-        localStorage.setItem("researchMatrix", JSON.stringify(matrix));
-        displayMatrix();
-    }
-}
-
-function clearMatrix() {
-    if (confirm("Delete all matrix entries?")) {
-        localStorage.removeItem("researchMatrix");
-        displayMatrix();
-    }
-}
-
 function exportData() {
     const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
     const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
-    let content = "RESEARCH NOTES\n\n";
+    let content = `
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Research Notebook Export</title>
+        </head>
+        <body>
+            <h1>Research Notebook Export</h1>
+            <h2>Research Notes</h2>
+    `;
 
     for (const category in notes) {
-        content += category + "\n";
+        content += `<h3>${category}</h3><ul>`;
 
         notes[category].forEach(note => {
-            content += "- " + note + "\n";
+            content += `<li>${note}</li>`;
         });
 
-        content += "\n";
+        content += `</ul>`;
     }
 
-    content += "\nRESEARCH MATRIX\n\n";
+    content += `
+        <h2>Research Matrix</h2>
+        <table border="1" cellspacing="0" cellpadding="6">
+            <tr>
+                <th>Author</th>
+                <th>Year</th>
+                <th>Purpose</th>
+                <th>Method</th>
+                <th>Findings</th>
+                <th>Relevance</th>
+            </tr>
+    `;
 
     matrix.forEach(item => {
-        content += "Author: " + item.author + "\n";
-        content += "Year: " + item.year + "\n";
-        content += "Purpose: " + item.purpose + "\n";
-        content += "Method: " + item.method + "\n";
-        content += "Findings: " + item.findings + "\n";
-        content += "Relevance: " + item.relevance + "\n";
-        content += "----------------------\n";
+        content += `
+            <tr>
+                <td>${item.author}</td>
+                <td>${item.year}</td>
+                <td>${item.purpose}</td>
+                <td>${item.method}</td>
+                <td>${item.findings}</td>
+                <td>${item.relevance}</td>
+            </tr>
+        `;
     });
 
+    content += `
+        </table>
+        </body>
+        </html>
+    `;
+
     const blob = new Blob([content], {
-        type: "text/plain"
+        type: "application/msword"
     });
 
     const link = document.createElement("a");
-
     link.href = URL.createObjectURL(blob);
-    link.download = "ResearchNotebook.txt";
-
+    link.download = "ResearchNotebook.doc";
     link.click();
 }
-
-displayNotes();
-displayMatrix();
