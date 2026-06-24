@@ -40,8 +40,9 @@
 
         <div id="noteInput" contenteditable="true" class="rich-editor"></div>
 
-        <button onclick="saveNote()">Save Note</button>
-        <button onclick="clearNotes()">Clear Notes</button>
+        <button onclick="saveNote()" id="saveNoteBtn">Save Note</button>
+        <button onclick="cancelEdit()" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
+        <button onclick="clearNotes()">Clear All Notes</button>
 
         <h3>Saved Notes</h3>
         <div id="notesList"></div>
