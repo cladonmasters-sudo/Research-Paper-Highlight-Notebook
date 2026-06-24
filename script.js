@@ -342,3 +342,19 @@ async function exportData() {
 
 displayNotes();
 displayMatrix();
+function generateCitation() {
+
+    const author = document.getElementById("citeAuthor").value;
+    const year = document.getElementById("citeYear").value;
+    const title = document.getElementById("citeTitle").value;
+    const journal = document.getElementById("citeJournal").value;
+    const volume = document.getElementById("citeVolume").value;
+    const issue = document.getElementById("citeIssue").value;
+    const pages = document.getElementById("citePages").value;
+    const doi = document.getElementById("citeDOI").value;
+
+    const citation =
+`${author} (${year}). ${title}. ${journal}, ${volume}(${issue}), ${pages}. ${doi}`;
+
+    document.getElementById("citationOutput").value = citation;
+}
