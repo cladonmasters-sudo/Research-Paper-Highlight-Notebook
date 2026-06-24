@@ -68,3 +68,72 @@ function clearNotes() {
 }
 
 displayNotes();
+function addMatrixEntry() {
+
+    const author = document.getElementById("author").value;
+    const year = document.getElementById("year").value;
+    const purpose = document.getElementById("purpose").value;
+    const method = document.getElementById("method").value;
+    const findings = document.getElementById("findings").value;
+    const relevance = document.getElementById("relevance").value;
+
+    if (!author) {
+        alert("Please enter an author.");
+        return;
+    }
+
+    const matrix =
+        JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    matrix.push({
+        author,
+        year,
+        purpose,
+        method,
+        findings,
+        relevance
+    });
+
+    localStorage.setItem(
+        "researchMatrix",
+        JSON.stringify(matrix)
+    );
+
+    renderMatrix();
+
+    document.getElementById("author").value = "";
+    document.getElementById("year").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("method").value = "";
+    document.getElementById("findings").value = "";
+    document.getElementById("relevance").value = "";
+}
+
+function renderMatrix() {
+
+    const tbody =
+        document.querySelector("#matrixTable tbody");
+
+    tbody.innerHTML = "";
+
+    const matrix =
+        JSON.parse(localStorage.getItem("researchMatrix")) || [];
+
+    matrix.forEach(item => {
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${item.author}</td>
+            <td>${item.year}</td>
+            <td>${item.purpose}</td>
+            <td>${item.method}</td>
+            <td>${item.findings}</td>
+            <td>${item.relevance}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+renderMatrix();
