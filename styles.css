@@ -1,7 +1,12 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Georgia, "Times New Roman", serif;
     margin: 20px;
-    background: #f5f5f5;
+    background: #f3ead7;
+    color: #2f261f;
+}
+
+h1, h2, h3, h4 {
+    color: #3b2f25;
 }
 
 .dashboard {
@@ -11,21 +16,20 @@ body {
     margin-bottom: 20px;
 }
 
+.dash-card,
+.pdf-section,
+.right-panel,
+.note-card,
+.favorite-card,
+.citation-card {
+    background: #fffaf0;
+    border: 1px solid #d6c3a3;
+    box-shadow: 0 2px 6px rgba(80, 55, 30, 0.12);
+}
+
 .dash-card {
-    background: white;
-    border: 1px solid #ccc;
     padding: 12px;
     text-align: center;
-}
-
-.dash-card h3 {
-    margin: 0;
-    font-size: 24px;
-}
-
-.dash-card p {
-    margin: 5px 0 0;
-    font-size: 13px;
 }
 
 .container {
@@ -36,14 +40,13 @@ body {
 
 .pdf-section,
 .right-panel {
-    background: white;
     padding: 15px;
-    border: 1px solid #ccc;
 }
 
 #viewer {
     height: 850px;
-    border: 1px solid #ccc;
+    border: 1px solid #d6c3a3;
+    background: #fffdf7;
     overflow: auto;
     margin-top: 10px;
 }
@@ -59,11 +62,6 @@ iframe {
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
     margin-bottom: 15px;
-}
-
-.tabs button {
-    padding: 10px;
-    font-size: 13px;
 }
 
 .tab-content {
@@ -83,14 +81,24 @@ button {
     padding: 8px;
     box-sizing: border-box;
     font-size: 14px;
-}
-
-textarea {
-    height: 120px;
+    border: 1px solid #c8ad82;
+    background: #fffdf7;
+    color: #2f261f;
 }
 
 button {
     cursor: pointer;
+    background: #d8c09a;
+    border: 1px solid #b89561;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #c9aa78;
+}
+
+textarea {
+    height: 120px;
 }
 
 .toolbar {
@@ -103,14 +111,12 @@ button {
 .toolbar button {
     width: auto !important;
     min-width: 45px;
-    padding: 6px 10px;
-    margin-top: 0;
 }
 
 .rich-editor {
     min-height: 160px;
-    border: 1px solid #ccc;
-    background: white;
+    border: 1px solid #c8ad82;
+    background: #fffdf7;
     padding: 10px;
     margin-top: 10px;
     white-space: pre-wrap;
@@ -125,8 +131,8 @@ button {
 }
 
 .color-sidebar {
-    background: #fafafa;
-    border: 1px solid #ddd;
+    background: #f8efd9;
+    border: 1px solid #d6c3a3;
     padding: 8px;
 }
 
@@ -139,50 +145,37 @@ button {
     overflow-y: auto;
 }
 
-.note-card,
-.favorite-card,
-.citation-card {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-top: 10px;
-    background: #fafafa;
-}
-
 .saved-note {
     padding: 10px;
     margin-top: 10px;
-    background: white;
+    background: #fffdf7;
     white-space: pre-wrap;
-    border-left: 5px solid #aaa;
-}
-
-.note-general {
-    border-left-color: #aaa;
+    border-left: 5px solid #a0835b;
 }
 
 .note-important {
-    background: #fff8c6;
-    border-left-color: #ffc107;
+    background: #fff1b8;
+    border-left-color: #d6a900;
 }
 
 .note-methodology {
-    background: #dceeff;
-    border-left-color: #007bff;
+    background: #dfeeff;
+    border-left-color: #5b8fc9;
 }
 
 .note-finding {
-    background: #ddf7df;
-    border-left-color: #28a745;
+    background: #e4f5d9;
+    border-left-color: #6aa84f;
 }
 
-.note-quote {
-    background: #ffe1f0;
-    border-left-color: #d63384;
+.note- direct quote {
+    background: #f9dce8;
+    border-left-color: #c76b94;
 }
 
 .note-meta {
     font-size: 12px;
-    color: #555;
+    color: #6b5744;
     margin-bottom: 8px;
 }
 
@@ -195,36 +188,28 @@ button {
 }
 
 .note-actions button,
-.citation-actions button {
+.citation-actions button,
+#matrixTable button {
     width: auto;
     padding: 6px 10px;
-    margin-top: 0;
 }
 
 .edit-btn {
-    background: #ffc107;
-    border: none;
+    background: #e8c56f;
 }
 
 .delete-note-btn {
-    background: #dc3545;
+    background: #b85c50;
     color: white;
-    border: none;
 }
 
 .favorite-card {
-    border-left: 5px solid #ffc107;
+    border-left: 5px solid #d6a900;
 }
 
 .citation-card {
-    border-left: 5px solid #007bff;
+    border-left: 5px solid #7c9ab7;
     white-space: pre-wrap;
-}
-
-#cancelEditBtn {
-    background: #6c757d;
-    color: white;
-    border: none;
 }
 
 table {
@@ -232,18 +217,19 @@ table {
     border-collapse: collapse;
     margin-top: 15px;
     font-size: 13px;
+    background: #fffdf7;
 }
 
 th,
 td {
-    border: 1px solid #ccc;
+    border: 1px solid #d6c3a3;
     padding: 6px;
     text-align: left;
     vertical-align: top;
 }
 
 th {
-    background: #f0f0f0;
+    background: #ead8b7;
 }
 
 .right-panel {
@@ -252,20 +238,15 @@ th {
     overflow-y: auto;
 }
 
-#matrixTable button {
-    width: auto;
-    padding: 5px 8px;
-    margin: 0;
-}
-
-#citationOutput {
-    height: 160px;
+#citationOutput,
+#literatureReviewOutput,
+#researchGapOutput {
+    white-space: pre-wrap;
 }
 
 #literatureReviewOutput,
 #researchGapOutput {
     height: 400px;
-    white-space: pre-wrap;
 }
 
 @media (max-width: 900px) {
