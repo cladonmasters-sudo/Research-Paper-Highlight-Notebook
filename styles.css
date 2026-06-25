@@ -16,20 +16,12 @@ h1, h2, h3, h4 {
     margin-bottom: 20px;
 }
 
-.dash-card,
-.pdf-section,
-.right-panel,
-.note-card,
-.favorite-card,
-.citation-card {
+.dash-card {
     background: #fffaf0;
     border: 1px solid #d6c3a3;
-    box-shadow: 0 2px 6px rgba(80, 55, 30, 0.12);
-}
-
-.dash-card {
     padding: 12px;
     text-align: center;
+    box-shadow: 0 2px 6px rgba(80, 55, 30, 0.12);
 }
 
 .container {
@@ -40,7 +32,10 @@ h1, h2, h3, h4 {
 
 .pdf-section,
 .right-panel {
+    background: #fffaf0;
     padding: 15px;
+    border: 1px solid #d6c3a3;
+    box-shadow: 0 2px 6px rgba(80, 55, 30, 0.12);
 }
 
 #viewer {
@@ -111,6 +106,8 @@ textarea {
 .toolbar button {
     width: auto !important;
     min-width: 45px;
+    padding: 6px 10px;
+    margin-top: 0;
 }
 
 .rich-editor {
@@ -138,6 +135,7 @@ textarea {
 
 .color-sidebar button {
     text-align: left;
+    background: #d9bf91;
 }
 
 .note-list {
@@ -145,45 +143,65 @@ textarea {
     overflow-y: auto;
 }
 
-.saved-note {
+.note-card,
+.favorite-card,
+.citation-card {
+    border: 1px solid #d6c3a3;
     padding: 10px;
     margin-top: 10px;
-    background: #fffdf7;
+    background: #fffaf0;
+    box-shadow: 0 1px 4px rgba(80, 55, 30, 0.10);
+}
+
+.saved-note {
+    padding: 14px;
+    margin-top: 12px;
     white-space: pre-wrap;
-    border-left: 5px solid #a0835b;
+    border: 2px solid;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(80, 55, 30, 0.18);
+}
+
+/* FULL NOTE COLORS */
+.note-general {
+    background: #fffdf7;
+    border-color: #b8a88f;
 }
 
 .note-important {
-    background: #fff1b8;
-    border-left-color: #d6a900;
+    background: #fff1a8;
+    border-color: #d6a900;
 }
 
 .note-methodology {
-    background: #dfeeff;
-    border-left-color: #5b8fc9;
+    background: #d9ecff;
+    border-color: #4d8dd6;
 }
 
 .note-finding {
-    background: #e4f5d9;
-    border-left-color: #6aa84f;
+    background: #dff5d6;
+    border-color: #5fa947;
 }
 
-.note- direct quote {
-    background: #f9dce8;
-    border-left-color: #c76b94;
+.note-quote {
+    background: #ffdcea;
+    border-color: #cc5b8c;
 }
 
 .note-meta {
     font-size: 12px;
-    color: #6b5744;
-    margin-bottom: 8px;
+    color: #5c4837;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 6px;
 }
 
 .note-actions,
 .citation-actions {
     display: flex;
     gap: 5px;
-    margin-top: 10px;
+    margin-top: 12px;
     flex-wrap: wrap;
 }
 
@@ -192,15 +210,18 @@ textarea {
 #matrixTable button {
     width: auto;
     padding: 6px 10px;
+    margin-top: 0;
 }
 
 .edit-btn {
     background: #e8c56f;
+    border: 1px solid #b89561;
 }
 
 .delete-note-btn {
     background: #b85c50;
     color: white;
+    border: 1px solid #7f332b;
 }
 
 .favorite-card {
