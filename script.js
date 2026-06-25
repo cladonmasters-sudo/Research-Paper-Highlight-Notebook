@@ -3,6 +3,7 @@ const viewer = document.getElementById("viewer");
 
 let editingCategory = null;
 let editingIndex = null;
+let currentNoteFilter = "all";
 
 fileInput.addEventListener("change", function (event) {
     const file = event.target.files[0];
@@ -19,10 +20,7 @@ fileInput.addEventListener("change", function (event) {
 });
 
 function openTab(tabId) {
-    document.querySelectorAll(".tab-content").forEach(tab => {
-        tab.classList.remove("active");
-    });
-
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
     document.getElementById(tabId).classList.add("active");
 }
 
@@ -33,29 +31,36 @@ function updateDashboard() {
     const articlesReviewed = Number(localStorage.getItem("articlesReviewed")) || 0;
 
     let notesCount = 0;
-
-    for (const category in notes) {
-        notesCount += notes[category].length;
-    }
-
-    const favoritesCount = matrix.filter(item => item.favorite).length;
-    const progress = Math.min(Math.round((matrix.length / 30) * 100), 100);
+    for (const category in notes) notesCount += notes[category].length;
 
     document.getElementById("articlesCount").innerText = articlesReviewed;
     document.getElementById("notesCount").innerText = notesCount;
     document.getElementById("matrixCount").innerText = matrix.length;
-    document.getElementById("favoritesCount").innerText = favoritesCount;
+    document.getElementById("favoritesCount").innerText = matrix.filter(item => item.favorite).length;
     document.getElementById("citationsCount").innerText = citations.length;
-    document.getElementById("progressCount").innerText = progress + "%";
 }
 
 function formatText(command) {
     document.execCommand(command, false, null);
 }
 
+function normalizeNote(note) {
+    if (typeof note === "string") {
+        return {
+            text: note,
+            color: "general",
+            article: "",
+            page: "",
+            tags: "",
+            date: new Date().toLocaleDateString()
+        };
+    }
+
+    return note;
+}
+
 function saveNote() {
     const category = document.getElementById("category").value;
-    const highlightType = document.getElementById("highlightType").value;
     const noteInput = document.getElementById("noteInput");
     const noteText = noteInput.innerHTML.trim();
 
@@ -64,12 +69,16 @@ function saveNote() {
         return;
     }
 
-    let notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
-
     const noteObject = {
         text: noteText,
-        type: highlightType
+        color: document.getElementById("noteColor").value,
+        article: document.getElementById("noteArticle").value.trim(),
+        page: document.getElementById("notePage").value.trim(),
+        tags: document.getElementById("noteTags").value.trim(),
+        date: new Date().toLocaleDateString()
     };
+
+    let notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
 
     if (editingCategory !== null && editingIndex !== null) {
         notes[editingCategory][editingIndex] = noteObject;
@@ -82,37 +91,61 @@ function saveNote() {
     localStorage.setItem("researchNotes", JSON.stringify(notes));
 
     noteInput.innerHTML = "";
+    document.getElementById("noteArticle").value = "";
+    document.getElementById("notePage").value = "";
+    document.getElementById("noteTags").value = "";
+
     displayNotes();
     updateDashboard();
 }
 
-function normalizeNote(note) {
-    if (typeof note === "string") {
-        return { text: note, type: "normal" };
-    }
-
-    return note;
+function setNoteFilter(filter) {
+    currentNoteFilter = filter;
+    displayNotes();
 }
 
 function displayNotes() {
     const notesList = document.getElementById("notesList");
     const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
+    const search = document.getElementById("noteSearch")?.value.toLowerCase() || "";
 
     notesList.innerHTML = "";
 
     for (const category in notes) {
+        const filteredNotes = notes[category]
+            .map((rawNote, index) => ({ note: normalizeNote(rawNote), index }))
+            .filter(({ note }) => {
+                const textMatch =
+                    note.text.toLowerCase().includes(search) ||
+                    note.article.toLowerCase().includes(search) ||
+                    note.tags.toLowerCase().includes(search);
+
+                const colorMatch =
+                    currentNoteFilter === "all" || note.color === currentNoteFilter;
+
+                return textMatch && colorMatch;
+            });
+
+        if (filteredNotes.length === 0) continue;
+
         const section = document.createElement("div");
         section.className = "note-card";
-        section.innerHTML = `<h4>${category}</h4>`;
+        section.innerHTML = `<h4>${category} (${filteredNotes.length})</h4>`;
 
-        notes[category].forEach((rawNote, index) => {
-            const note = normalizeNote(rawNote);
-
+        filteredNotes.forEach(({ note, index }) => {
             const savedNote = document.createElement("div");
-            savedNote.className = `saved-note note-${note.type}`;
+            savedNote.className = `saved-note note-${note.color}`;
 
             savedNote.innerHTML = `
+                <div class="note-meta">
+                    <strong>Article:</strong> ${note.article || "Not specified"}<br>
+                    <strong>Page:</strong> ${note.page || "N/A"}<br>
+                    <strong>Tags:</strong> ${note.tags || "None"}<br>
+                    <strong>Date:</strong> ${note.date || ""}
+                </div>
+
                 <div>${note.text}</div>
+
                 <div class="note-actions">
                     <button class="edit-btn" onclick="editNote('${category}', ${index})">Edit</button>
                     <button class="delete-note-btn" onclick="deleteNote('${category}', ${index})">Delete</button>
@@ -129,11 +162,14 @@ function displayNotes() {
 function editNote(category, index) {
     const notes = JSON.parse(localStorage.getItem("researchNotes")) || {};
     const note = normalizeNote(notes[category][index]);
-    const noteInput = document.getElementById("noteInput");
 
-    noteInput.innerHTML = note.text;
-    document.getElementById("highlightType").value = note.type;
+    document.getElementById("noteInput").innerHTML = note.text;
+    document.getElementById("noteColor").value = note.color;
+    document.getElementById("noteArticle").value = note.article;
+    document.getElementById("notePage").value = note.page;
+    document.getElementById("noteTags").value = note.tags;
     document.getElementById("category").value = category;
+
     document.getElementById("saveNoteBtn").innerText = "Update Note";
     document.getElementById("cancelEditBtn").style.display = "block";
 
@@ -141,7 +177,6 @@ function editNote(category, index) {
     editingIndex = index;
 
     openTab("notesTab");
-    noteInput.scrollIntoView({ behavior: "smooth" });
 }
 
 function deleteNote(category, index) {
@@ -150,10 +185,7 @@ function deleteNote(category, index) {
     if (!confirm("Delete this note?")) return;
 
     notes[category].splice(index, 1);
-
-    if (notes[category].length === 0) {
-        delete notes[category];
-    }
+    if (notes[category].length === 0) delete notes[category];
 
     localStorage.setItem("researchNotes", JSON.stringify(notes));
 
@@ -176,8 +208,6 @@ function resetEditMode() {
 function clearNotes() {
     if (confirm("Clear all notes?")) {
         localStorage.removeItem("researchNotes");
-        document.getElementById("noteInput").innerHTML = "";
-        resetEditMode();
         displayNotes();
         updateDashboard();
     }
@@ -186,10 +216,6 @@ function clearNotes() {
 function addMatrixEntry() {
     const author = document.getElementById("author").value.trim();
     const year = document.getElementById("year").value.trim();
-    const purpose = document.getElementById("purpose").value.trim();
-    const method = document.getElementById("method").value.trim();
-    const findings = document.getElementById("findings").value.trim();
-    const relevance = document.getElementById("relevance").value.trim();
 
     if (!author) {
         alert("Please enter an author.");
@@ -201,21 +227,18 @@ function addMatrixEntry() {
     matrix.push({
         author,
         year,
-        purpose,
-        method,
-        findings,
-        relevance,
+        purpose: document.getElementById("purpose").value.trim(),
+        method: document.getElementById("method").value.trim(),
+        findings: document.getElementById("findings").value.trim(),
+        relevance: document.getElementById("relevance").value.trim(),
         favorite: false
     });
 
     localStorage.setItem("researchMatrix", JSON.stringify(matrix));
 
-    document.getElementById("author").value = "";
-    document.getElementById("year").value = "";
-    document.getElementById("purpose").value = "";
-    document.getElementById("method").value = "";
-    document.getElementById("findings").value = "";
-    document.getElementById("relevance").value = "";
+    ["author", "year", "purpose", "method", "findings", "relevance"].forEach(id => {
+        document.getElementById(id).value = "";
+    });
 
     displayMatrix();
     displayFavorites();
@@ -227,28 +250,20 @@ function displayMatrix() {
     if (!tbody) return;
 
     const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
-    const searchBox = document.getElementById("matrixSearch");
-    const searchText = searchBox ? searchBox.value.toLowerCase() : "";
+    const search = document.getElementById("matrixSearch")?.value.toLowerCase() || "";
 
     tbody.innerHTML = "";
 
     matrix
-        .map((item, originalIndex) => ({ item, originalIndex }))
-        .filter(({ item }) => {
-            return (
-                String(item.author || "").toLowerCase().includes(searchText) ||
-                String(item.year || "").toLowerCase().includes(searchText) ||
-                String(item.purpose || "").toLowerCase().includes(searchText) ||
-                String(item.method || "").toLowerCase().includes(searchText) ||
-                String(item.findings || "").toLowerCase().includes(searchText) ||
-                String(item.relevance || "").toLowerCase().includes(searchText)
-            );
-        })
-        .forEach(({ item, originalIndex }) => {
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) =>
+            Object.values(item).join(" ").toLowerCase().includes(search)
+        )
+        .forEach(({ item, index }) => {
             const row = document.createElement("tr");
 
             row.innerHTML = `
-                <td><button class="favorite-btn" onclick="toggleFavorite(${originalIndex})">${item.favorite ? "★" : "☆"}</button></td>
+                <td><button onclick="toggleFavorite(${index})">${item.favorite ? "★" : "☆"}</button></td>
                 <td>${item.author}</td>
                 <td>${item.year}</td>
                 <td>${item.purpose}</td>
@@ -256,8 +271,8 @@ function displayMatrix() {
                 <td>${item.findings}</td>
                 <td>${item.relevance}</td>
                 <td>
-                    <button onclick="fillAPAFromMatrix(${originalIndex})">APA</button>
-                    <button onclick="deleteMatrixEntry(${originalIndex})">Delete</button>
+                    <button onclick="fillAPAFromMatrix(${index})">APA</button>
+                    <button onclick="deleteMatrixEntry(${index})">Delete</button>
                 </td>
             `;
 
@@ -265,22 +280,9 @@ function displayMatrix() {
         });
 }
 
-function fillAPAFromMatrix(index) {
-    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
-    const item = matrix[index];
-
-    document.getElementById("citeAuthor").value = item.author || "";
-    document.getElementById("citeShortAuthor").value = item.author || "";
-    document.getElementById("citeYear").value = item.year || "";
-    document.getElementById("citeTitle").value = item.purpose || "";
-
-    openTab("apaTab");
-}
-
 function toggleFavorite(index) {
     let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
     matrix[index].favorite = !matrix[index].favorite;
-
     localStorage.setItem("researchMatrix", JSON.stringify(matrix));
 
     displayMatrix();
@@ -289,16 +291,16 @@ function toggleFavorite(index) {
 }
 
 function displayFavorites() {
-    const favoritesList = document.getElementById("favoritesList");
-    if (!favoritesList) return;
+    const list = document.getElementById("favoritesList");
+    if (!list) return;
 
     const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
     const favorites = matrix.filter(item => item.favorite);
 
-    favoritesList.innerHTML = "";
+    list.innerHTML = "";
 
     if (favorites.length === 0) {
-        favoritesList.innerHTML = "<p>No favorite articles yet. Click the star beside a matrix entry.</p>";
+        list.innerHTML = "<p>No favorite articles yet.</p>";
         return;
     }
 
@@ -314,20 +316,21 @@ function displayFavorites() {
             <p><strong>Relevance:</strong> ${item.relevance}</p>
         `;
 
-        favoritesList.appendChild(card);
+        list.appendChild(card);
     });
 }
 
 function deleteMatrixEntry(index) {
     let matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
-    if (confirm("Delete this matrix entry?")) {
-        matrix.splice(index, 1);
-        localStorage.setItem("researchMatrix", JSON.stringify(matrix));
-        displayMatrix();
-        displayFavorites();
-        updateDashboard();
-    }
+    if (!confirm("Delete this matrix entry?")) return;
+
+    matrix.splice(index, 1);
+    localStorage.setItem("researchMatrix", JSON.stringify(matrix));
+
+    displayMatrix();
+    displayFavorites();
+    updateDashboard();
 }
 
 function clearMatrix() {
@@ -344,7 +347,6 @@ function sortMatrixByAuthor() {
     matrix.sort((a, b) => String(a.author || "").localeCompare(String(b.author || "")));
     localStorage.setItem("researchMatrix", JSON.stringify(matrix));
     displayMatrix();
-    displayFavorites();
 }
 
 function sortMatrixByYear() {
@@ -352,37 +354,50 @@ function sortMatrixByYear() {
     matrix.sort((a, b) => Number(a.year || 0) - Number(b.year || 0));
     localStorage.setItem("researchMatrix", JSON.stringify(matrix));
     displayMatrix();
-    displayFavorites();
+}
+
+function fillAPAFromMatrix(index) {
+    const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
+    const item = matrix[index];
+
+    document.getElementById("citeAuthor").value = item.author || "";
+    document.getElementById("citeShortAuthor").value = item.author || "";
+    document.getElementById("citeYear").value = item.year || "";
+    document.getElementById("citeTitle").value = item.purpose || "";
+
+    openTab("apaTab");
 }
 
 async function exportData() {
-    alert("Word export is still available in the previous version. We can improve this next.");
+    alert("Export is temporarily paused in this version. We can restore Word export next.");
 }
 
 function getCitationFields() {
-    const referenceAuthor = document.getElementById("citeAuthor").value.trim();
-    const shortAuthor = document.getElementById("citeShortAuthor").value.trim();
-    const year = document.getElementById("citeYear").value.trim().replace(/[()]/g, "");
-    const title = document.getElementById("citeTitle").value.trim();
-    const journal = document.getElementById("citeJournal").value.trim();
-    const volume = document.getElementById("citeVolume").value.trim();
-    const issue = document.getElementById("citeIssue").value.trim();
     let pages = document.getElementById("citePages").value.trim();
-    const doi = document.getElementById("citeDOI").value.trim();
-    const quote = document.getElementById("quoteText").value.trim();
-    const page = document.getElementById("citePage").value.trim();
 
     if (pages.toLowerCase().startsWith("pp.")) {
         pages = pages.replace(/pp\./i, "").trim();
     }
 
-    return { referenceAuthor, shortAuthor, year, title, journal, volume, issue, pages, doi, quote, page };
+    return {
+        referenceAuthor: document.getElementById("citeAuthor").value.trim(),
+        shortAuthor: document.getElementById("citeShortAuthor").value.trim(),
+        year: document.getElementById("citeYear").value.trim().replace(/[()]/g, ""),
+        title: document.getElementById("citeTitle").value.trim(),
+        journal: document.getElementById("citeJournal").value.trim(),
+        volume: document.getElementById("citeVolume").value.trim(),
+        issue: document.getElementById("citeIssue").value.trim(),
+        pages,
+        doi: document.getElementById("citeDOI").value.trim(),
+        quote: document.getElementById("quoteText").value.trim(),
+        page: document.getElementById("citePage").value.trim()
+    };
 }
 
 function generateReferenceCitation() {
     const data = getCitationFields();
-    let citation = "";
 
+    let citation = "";
     citation += data.referenceAuthor ? data.referenceAuthor + " " : "";
     citation += data.year ? "(" + data.year + "). " : "(n.d.). ";
     citation += data.title ? data.title.replace(/\.+$/, "") + ". " : "";
@@ -402,49 +417,39 @@ function generateReferenceCitation() {
 
 function generateNarrativeCitation() {
     const data = getCitationFields();
-    const author = data.shortAuthor || "[Author]";
-    const year = data.year || "n.d.";
     const pagePart = data.page ? ` (p. ${data.page})` : "";
-    const idea = data.quote || "[insert paraphrased idea here]";
 
     document.getElementById("citationOutput").value =
-        `${author} (${year}) stated that ${idea}${pagePart}.`;
+        `${data.shortAuthor || "[Author]"} (${data.year || "n.d."}) stated that ${data.quote || "[insert paraphrased idea here]"}${pagePart}.`;
 }
 
 function generateParentheticalCitation() {
     const data = getCitationFields();
-    const author = data.shortAuthor || "[Author]";
-    const year = data.year || "n.d.";
     const pagePart = data.page ? `, p. ${data.page}` : "";
-    const idea = data.quote || "[insert paraphrased idea here]";
 
     document.getElementById("citationOutput").value =
-        `${idea} (${author}, ${year}${pagePart}).`;
+        `${data.quote || "[insert paraphrased idea here]"} (${data.shortAuthor || "[Author]"}, ${data.year || "n.d."}${pagePart}).`;
 }
 
 function generateDirectQuoteCitation() {
     const data = getCitationFields();
-    const author = data.shortAuthor || "[Author]";
-    const year = data.year || "n.d.";
     const pagePart = data.page ? `, p. ${data.page}` : "";
-    const quote = data.quote || "Insert exact quote here";
 
     document.getElementById("citationOutput").value =
-        `"${quote}" (${author}, ${year}${pagePart}).`;
+        `"${data.quote || "Insert exact quote here"}" (${data.shortAuthor || "[Author]"}, ${data.year || "n.d."}${pagePart}).`;
 }
 
 function saveCitation() {
-    const citationText = document.getElementById("citationOutput").value.trim();
+    const citation = document.getElementById("citationOutput").value.trim();
 
-    if (!citationText) {
+    if (!citation) {
         alert("Generate a citation first.");
         return;
     }
 
-    let savedCitations = JSON.parse(localStorage.getItem("savedCitations")) || [];
-    savedCitations.push(citationText);
-
-    localStorage.setItem("savedCitations", JSON.stringify(savedCitations));
+    let saved = JSON.parse(localStorage.getItem("savedCitations")) || [];
+    saved.push(citation);
+    localStorage.setItem("savedCitations", JSON.stringify(saved));
 
     displaySavedCitations();
     updateDashboard();
@@ -455,10 +460,10 @@ function displaySavedCitations() {
     const list = document.getElementById("savedCitationsList");
     if (!list) return;
 
-    const savedCitations = JSON.parse(localStorage.getItem("savedCitations")) || [];
+    const saved = JSON.parse(localStorage.getItem("savedCitations")) || [];
     list.innerHTML = "";
 
-    savedCitations.forEach((citation, index) => {
+    saved.forEach((citation, index) => {
         const card = document.createElement("div");
         card.className = "citation-card";
 
@@ -475,69 +480,54 @@ function displaySavedCitations() {
 }
 
 function copyCitation(index) {
-    const savedCitations = JSON.parse(localStorage.getItem("savedCitations")) || [];
-    navigator.clipboard.writeText(savedCitations[index]);
+    const saved = JSON.parse(localStorage.getItem("savedCitations")) || [];
+    navigator.clipboard.writeText(saved[index]);
     alert("Citation copied.");
 }
 
 function deleteCitation(index) {
-    let savedCitations = JSON.parse(localStorage.getItem("savedCitations")) || [];
-    if (!confirm("Delete this citation?")) return;
-
-    savedCitations.splice(index, 1);
-    localStorage.setItem("savedCitations", JSON.stringify(savedCitations));
-
+    let saved = JSON.parse(localStorage.getItem("savedCitations")) || [];
+    saved.splice(index, 1);
+    localStorage.setItem("savedCitations", JSON.stringify(saved));
     displaySavedCitations();
     updateDashboard();
 }
 
 function clearSavedCitations() {
-    if (confirm("Delete all saved citations?")) {
-        localStorage.removeItem("savedCitations");
-        displaySavedCitations();
-        updateDashboard();
-    }
+    localStorage.removeItem("savedCitations");
+    displaySavedCitations();
+    updateDashboard();
 }
 
 function clearCitationFields() {
-    document.getElementById("citeAuthor").value = "";
-    document.getElementById("citeShortAuthor").value = "";
-    document.getElementById("citeYear").value = "";
-    document.getElementById("citeTitle").value = "";
-    document.getElementById("citeJournal").value = "";
-    document.getElementById("citeVolume").value = "";
-    document.getElementById("citeIssue").value = "";
-    document.getElementById("citePages").value = "";
-    document.getElementById("citeDOI").value = "";
-    document.getElementById("quoteText").value = "";
-    document.getElementById("citePage").value = "";
-    document.getElementById("citationOutput").value = "";
+    [
+        "citeAuthor", "citeShortAuthor", "citeYear", "citeTitle",
+        "citeJournal", "citeVolume", "citeIssue", "citePages",
+        "citeDOI", "quoteText", "citePage", "citationOutput"
+    ].forEach(id => document.getElementById(id).value = "");
 }
 
 function generateLiteratureReview() {
     const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
     const favorites = matrix.filter(item => item.favorite);
-    const sourceData = favorites.length > 0 ? favorites : matrix;
+    const source = favorites.length ? favorites : matrix;
 
-    if (sourceData.length === 0) {
+    if (source.length === 0) {
         alert("Add matrix entries first.");
         return;
     }
 
     let draft = "Literature Review Draft\n\n";
-    draft += "Several studies have examined topics related to the present research.\n\n";
 
-    sourceData.forEach(item => {
-        draft += `${item.author} (${item.year}) examined ${item.purpose || "a related educational issue"}. `;
+    source.forEach(item => {
+        draft += `${item.author} (${item.year}) examined ${item.purpose || "a related topic"}. `;
 
-        if (item.method) draft += `The study used ${item.method} as its research method. `;
+        if (item.method) draft += `The study used ${item.method}. `;
         if (item.findings) draft += `The findings showed that ${item.findings}. `;
-        if (item.relevance) draft += `This is relevant to the present study because ${item.relevance}. `;
+        if (item.relevance) draft += `This is relevant because ${item.relevance}. `;
 
         draft += "\n\n";
     });
-
-    draft += "Overall, these studies provide useful background for understanding the research problem. However, further investigation may still be needed to address the specific context, participants, and learning needs examined in the present study.";
 
     document.getElementById("literatureReviewOutput").value = draft;
 }
@@ -545,27 +535,12 @@ function generateLiteratureReview() {
 function generateSynthesis() {
     const matrix = JSON.parse(localStorage.getItem("researchMatrix")) || [];
 
-    if (matrix.length === 0) {
-        alert("Add matrix entries first.");
-        return;
-    }
-
     let draft = "Research Synthesis\n\n";
-    draft += "The reviewed studies show several recurring patterns. ";
-
-    const methods = [...new Set(matrix.map(item => item.method).filter(Boolean))];
-
-    if (methods.length > 0) {
-        draft += `Common research methods include ${methods.join(", ")}. `;
-    }
-
-    draft += "Across the studies, the findings suggest that the topic is influenced by context, teaching practices, learner needs, and institutional support. ";
-
-    draft += "These patterns may help strengthen the foundation of the present study and support the development of the research problem.\n\n";
+    draft += "The reviewed studies show recurring patterns related to the research topic. ";
 
     matrix.forEach(item => {
         if (item.relevance) {
-            draft += `The study by ${item.author} (${item.year}) is useful because ${item.relevance}.\n`;
+            draft += `${item.author} (${item.year}) is useful because ${item.relevance}. `;
         }
     });
 
@@ -574,74 +549,12 @@ function generateSynthesis() {
 
 function copyLiteratureReview() {
     const draft = document.getElementById("literatureReviewOutput").value;
-
-    if (!draft.trim()) {
-        alert("Generate a literature review first.");
-        return;
-    }
-
     navigator.clipboard.writeText(draft);
-    alert("Literature review draft copied.");
+    alert("Draft copied.");
 }
 
 function clearLiteratureReview() {
     document.getElementById("literatureReviewOutput").value = "";
-}
-
-function saveChapterOrganizer() {
-    const organizer = {
-        theoreticalFramework: document.getElementById("theoreticalFramework").value,
-        conceptualFramework: document.getElementById("conceptualFramework").value,
-        relatedLiterature: document.getElementById("relatedLiterature").value,
-        relatedStudies: document.getElementById("relatedStudies").value,
-        gapAnalysis: document.getElementById("gapAnalysis").value
-    };
-
-    localStorage.setItem("chapterOrganizer", JSON.stringify(organizer));
-    alert("Chapter 2 organizer saved.");
-}
-
-function loadChapterOrganizer() {
-    const organizer = JSON.parse(localStorage.getItem("chapterOrganizer")) || {};
-
-    document.getElementById("theoreticalFramework").value = organizer.theoreticalFramework || "";
-    document.getElementById("conceptualFramework").value = organizer.conceptualFramework || "";
-    document.getElementById("relatedLiterature").value = organizer.relatedLiterature || "";
-    document.getElementById("relatedStudies").value = organizer.relatedStudies || "";
-    document.getElementById("gapAnalysis").value = organizer.gapAnalysis || "";
-}
-
-function copyChapterOrganizer() {
-    const content =
-`THEORETICAL FRAMEWORK
-
-${document.getElementById("theoreticalFramework").value}
-
-CONCEPTUAL FRAMEWORK
-
-${document.getElementById("conceptualFramework").value}
-
-RELATED LITERATURE
-
-${document.getElementById("relatedLiterature").value}
-
-RELATED STUDIES
-
-${document.getElementById("relatedStudies").value}
-
-GAP ANALYSIS
-
-${document.getElementById("gapAnalysis").value}`;
-
-    navigator.clipboard.writeText(content);
-    alert("Chapter 2 organizer copied.");
-}
-
-function clearChapterOrganizer() {
-    if (confirm("Clear Chapter 2 organizer?")) {
-        localStorage.removeItem("chapterOrganizer");
-        loadChapterOrganizer();
-    }
 }
 
 function generateResearchGap() {
@@ -653,39 +566,19 @@ function generateResearchGap() {
         return;
     }
 
-    let gap = "Possible Research Gap\n\n";
-
-    gap += `The present study focuses on ${topic}.\n\n`;
+    let gap = `Possible Research Gap\n\nThe present study focuses on ${topic}.\n\n`;
 
     if (matrix.length > 0) {
-        gap += "Based on the reviewed studies, existing research has already examined several related areas. ";
-
-        const methods = [...new Set(matrix.map(item => item.method).filter(Boolean))];
-
-        if (methods.length > 0) {
-            gap += `Many of the studies used methods such as ${methods.join(", ")}. `;
-        }
-
-        gap += "However, the reviewed studies may not fully address the specific context, learner population, or classroom situation targeted in the present study.\n\n";
+        gap += "The reviewed studies provide useful background, but they may not fully address the specific context, learners, and instructional challenges targeted in the present study.\n\n";
     }
 
-    gap += "This suggests a possible research gap: while previous studies provide useful background, there appears to be a need for further investigation into the specific challenges, experiences, and instructional needs related to this topic.\n\n";
-
-    gap += "Therefore, the present study may contribute by providing context-specific insights that can help educators, administrators, and future researchers better understand the issue.";
+    gap += "This suggests a need for further investigation into the specific experiences, challenges, and support needs related to this topic.";
 
     document.getElementById("researchGapOutput").value = gap;
-    document.getElementById("gapAnalysis").value = gap;
-    saveChapterOrganizer();
 }
 
 function copyResearchGap() {
     const gap = document.getElementById("researchGapOutput").value;
-
-    if (!gap.trim()) {
-        alert("Generate a research gap first.");
-        return;
-    }
-
     navigator.clipboard.writeText(gap);
     alert("Research gap copied.");
 }
@@ -694,5 +587,4 @@ displayNotes();
 displayMatrix();
 displayFavorites();
 displaySavedCitations();
-loadChapterOrganizer();
 updateDashboard();
