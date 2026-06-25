@@ -9,21 +9,19 @@
 <h1>Research Paper Notebook</h1>
 
 <div class="dashboard">
-    <div class="dash-card"><h3 id="articlesCount">0</h3><p>Articles Reviewed</p></div>
-    <div class="dash-card"><h3 id="notesCount">0</h3><p>Notes Saved</p></div>
-    <div class="dash-card"><h3 id="matrixCount">0</h3><p>Matrix Entries</p></div>
+    <div class="dash-card"><h3 id="articlesCount">0</h3><p>Articles</p></div>
+    <div class="dash-card"><h3 id="notesCount">0</h3><p>Notes</p></div>
+    <div class="dash-card"><h3 id="matrixCount">0</h3><p>Matrix</p></div>
     <div class="dash-card"><h3 id="favoritesCount">0</h3><p>Favorites</p></div>
     <div class="dash-card"><h3 id="citationsCount">0</h3><p>Citations</p></div>
-    <div class="dash-card"><h3 id="progressCount">0%</h3><p>Chapter 2 Progress</p></div>
 </div>
-
-<input type="file" id="pdfUpload" accept=".pdf">
 
 <div class="container">
 
     <div class="pdf-section">
         <h2>PDF Reader</h2>
-        <div id="viewer">Upload a PDF to begin.</div>
+        <input type="file" id="pdfUpload" accept=".pdf">
+        <div id="viewer">Optional: Upload a PDF to begin.</div>
     </div>
 
     <div class="right-panel">
@@ -35,12 +33,11 @@
             <button onclick="openTab('apaTab')">APA</button>
             <button onclick="openTab('citationsTab')">Citations</button>
             <button onclick="openTab('litReviewTab')">Lit Review</button>
-            <button onclick="openTab('organizerTab')">Chapter 2</button>
-            <button onclick="openTab('gapTab')">Gap Finder</button>
+            <button onclick="openTab('gapTab')">Gap</button>
         </div>
 
         <div id="notesTab" class="tab-content active">
-            <h2>Research Notebook</h2>
+            <h2>Research Notes</h2>
 
             <select id="category">
                 <option>Introduction</option>
@@ -52,13 +49,17 @@
                 <option>Personal Notes</option>
             </select>
 
-            <select id="highlightType">
-                <option value="normal">Normal Note</option>
-                <option value="important">Yellow - Important</option>
-                <option value="methodology">Blue - Methodology</option>
-                <option value="finding">Green - Findings</option>
-                <option value="quote">Pink - Direct Quote</option>
+            <select id="noteColor">
+                <option value="general">⚪ General Note</option>
+                <option value="important">🟨 Important</option>
+                <option value="methodology">🟦 Methodology</option>
+                <option value="finding">🟩 Findings</option>
+                <option value="quote">🩷 Direct Quote</option>
             </select>
+
+            <input type="text" id="noteArticle" placeholder="Article / Source, e.g., Chong & Graham (2013)">
+            <input type="text" id="notePage" placeholder="Page number">
+            <input type="text" id="noteTags" placeholder="Tags, e.g., #ESL #SPED #CaseStudy">
 
             <div class="toolbar">
                 <button onclick="formatText('bold')"><b>B</b></button>
@@ -75,7 +76,21 @@
             <button onclick="clearNotes()">Clear All Notes</button>
 
             <h3>Saved Notes</h3>
-            <div id="notesList"></div>
+
+            <input type="text" id="noteSearch" placeholder="Search notes..." oninput="displayNotes()">
+
+            <div class="note-workspace">
+                <div class="color-sidebar">
+                    <button onclick="setNoteFilter('all')">All</button>
+                    <button onclick="setNoteFilter('important')">🟨 Important</button>
+                    <button onclick="setNoteFilter('methodology')">🟦 Methodology</button>
+                    <button onclick="setNoteFilter('finding')">🟩 Findings</button>
+                    <button onclick="setNoteFilter('quote')">🩷 Quotes</button>
+                    <button onclick="setNoteFilter('general')">⚪ General</button>
+                </div>
+
+                <div id="notesList" class="note-list"></div>
+            </div>
         </div>
 
         <div id="matrixTab" class="tab-content">
@@ -83,7 +98,7 @@
 
             <input type="text" id="author" placeholder="Author">
             <input type="text" id="year" placeholder="Year">
-            <input type="text" id="purpose" placeholder="Purpose of Study / Title">
+            <input type="text" id="purpose" placeholder="Purpose / Title">
             <input type="text" id="method" placeholder="Research Method">
             <textarea id="findings" placeholder="Key Findings"></textarea>
             <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
@@ -123,7 +138,7 @@
         <div id="apaTab" class="tab-content">
             <h2>APA 7 Citation Generator</h2>
 
-            <input type="text" id="citeAuthor" placeholder="Reference Author(s), e.g., Chong, J. P. W., & Graham, L. J.">
+            <input type="text" id="citeAuthor" placeholder="Reference Author(s)">
             <input type="text" id="citeShortAuthor" placeholder="In-text Author(s), e.g., Chong & Graham">
             <input type="text" id="citeYear" placeholder="Year">
             <input type="text" id="citeTitle" placeholder="Article Title">
@@ -160,36 +175,13 @@
             <button onclick="copyLiteratureReview()">Copy Draft</button>
             <button onclick="clearLiteratureReview()">Clear Draft</button>
 
-            <textarea id="literatureReviewOutput" placeholder="Generated literature review draft will appear here..."></textarea>
-        </div>
-
-        <div id="organizerTab" class="tab-content">
-            <h2>Chapter 2 Organizer</h2>
-
-            <h3>Theoretical Framework</h3>
-            <textarea id="theoreticalFramework"></textarea>
-
-            <h3>Conceptual Framework</h3>
-            <textarea id="conceptualFramework"></textarea>
-
-            <h3>Related Literature</h3>
-            <textarea id="relatedLiterature"></textarea>
-
-            <h3>Related Studies</h3>
-            <textarea id="relatedStudies"></textarea>
-
-            <h3>Gap Analysis</h3>
-            <textarea id="gapAnalysis"></textarea>
-
-            <button onclick="saveChapterOrganizer()">Save Chapter 2 Organizer</button>
-            <button onclick="copyChapterOrganizer()">Copy Chapter 2 Organizer</button>
-            <button onclick="clearChapterOrganizer()">Clear Organizer</button>
+            <textarea id="literatureReviewOutput" placeholder="Generated literature review will appear here..."></textarea>
         </div>
 
         <div id="gapTab" class="tab-content">
             <h2>Research Gap Finder</h2>
 
-            <textarea id="studyTopic" placeholder="Type your study topic here... Example: Challenges of Teaching Multi-Age ESL Classrooms with Learners of Diverse Abilities and Learning Needs"></textarea>
+            <textarea id="studyTopic" placeholder="Type your study topic here..."></textarea>
 
             <button onclick="generateResearchGap()">Generate Research Gap</button>
             <button onclick="copyResearchGap()">Copy Research Gap</button>
