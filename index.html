@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Research Reading Notebook</title>
-  <link rel="stylesheet" href="./style.css?v=30" />
+  <link rel="stylesheet" href="./style.css?v=40" />
 </head>
+
 <body>
   <header>
     <h1>Research Reading Notebook</h1>
@@ -13,7 +14,7 @@
   </header>
 
   <main>
-    <section class="panel">
+    <aside class="panel">
       <h2>Article Details</h2>
 
       <label>Article Title</label>
@@ -34,13 +35,18 @@
       <label>Tags</label>
       <input id="tags" placeholder="Example: inclusive education, ESL, SPED" />
 
+      <label>Search Saved Notes</label>
+      <input id="searchBox" placeholder="Search title, tags, summary, quotes..." oninput="searchNotes()" />
+
+      <div id="searchResults"></div>
+
       <button onclick="saveArticle()">Save Article Notes</button>
       <button onclick="loadArticle()">Load Saved Notes</button>
       <button onclick="exportCurrentWord()">Export Current Article to Word</button>
       <button onclick="exportAllWord()">Export All Notes to Word</button>
       <button onclick="exportBackup()">Download Backup JSON</button>
       <button onclick="recoverOldNotes()">Recover Old Saved Notes</button>
-    </section>
+    </aside>
 
     <section class="workspace">
       <h2>Reading Notes</h2>
@@ -67,6 +73,6 @@
     </section>
   </main>
 
-  <script src="./script.js?v=30"></script>
+  <script src="./script.js?v=40"></script>
 </body>
 </html>
