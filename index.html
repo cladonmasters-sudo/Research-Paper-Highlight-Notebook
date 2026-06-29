@@ -1,200 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Research Paper Notebook</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research Reading Notebook</title>
+  <link rel="stylesheet" href="./style.css?v=30" />
 </head>
 <body>
+  <header>
+    <h1>Research Reading Notebook</h1>
+    <p>Save journal notes, quotes, findings, and export them for Chapter 2.</p>
+  </header>
 
-<h1>Research Paper Notebook</h1>
+  <main>
+    <section class="panel">
+      <h2>Article Details</h2>
 
-<div class="dashboard">
-    <div class="dash-card"><h3 id="articlesCount">0</h3><p>Articles</p></div>
-    <div class="dash-card"><h3 id="notesCount">0</h3><p>Notes</p></div>
-    <div class="dash-card"><h3 id="matrixCount">0</h3><p>Matrix</p></div>
-    <div class="dash-card"><h3 id="favoritesCount">0</h3><p>Favorites</p></div>
-    <div class="dash-card"><h3 id="citationsCount">0</h3><p>Citations</p></div>
-</div>
+      <label>Article Title</label>
+      <input id="title" placeholder="Title of the journal article" />
 
-<div class="container">
+      <label>Author/s</label>
+      <input id="authors" placeholder="Example: Smith and Cruz" />
 
-    <div class="pdf-section">
-        <h2>PDF Reader</h2>
-        <input type="file" id="pdfUpload" accept=".pdf">
-        <div id="viewer">Optional: Upload a PDF to begin.</div>
-    </div>
+      <label>Year</label>
+      <input id="year" placeholder="Example: 2024" />
 
-    <div class="right-panel">
+      <label>Journal / Source</label>
+      <input id="journal" placeholder="Name of journal or website" />
 
-        <div class="tabs">
-            <button onclick="openTab('notesTab')">Notes</button>
-            <button onclick="openTab('matrixTab')">Matrix</button>
-            <button onclick="openTab('favoritesTab')">Favorites</button>
-            <button onclick="openTab('apaTab')">APA</button>
-            <button onclick="openTab('citationsTab')">Citations</button>
-            <button onclick="openTab('litReviewTab')">Lit Review</button>
-            <button onclick="openTab('gapTab')">Gap</button>
-        </div>
+      <label>DOI / URL</label>
+      <input id="url" placeholder="Paste DOI or article link" />
 
-        <div id="notesTab" class="tab-content active">
-            <h2>Research Notes</h2>
+      <label>Tags</label>
+      <input id="tags" placeholder="Example: inclusive education, ESL, SPED" />
 
-            <select id="category">
-                <option>Introduction</option>
-                <option>Literature Review</option>
-                <option>Methodology</option>
-                <option>Findings</option>
-                <option>Discussion</option>
-                <option>Conclusion</option>
-                <option>Personal Notes</option>
-            </select>
+      <button onclick="saveArticle()">Save Article Notes</button>
+      <button onclick="loadArticle()">Load Saved Notes</button>
+      <button onclick="exportCurrentWord()">Export Current Article to Word</button>
+      <button onclick="exportAllWord()">Export All Notes to Word</button>
+      <button onclick="exportBackup()">Download Backup JSON</button>
+      <button onclick="recoverOldNotes()">Recover Old Saved Notes</button>
+    </section>
 
-            <select id="noteColor">
-                <option value="general">⚪ General Note</option>
-                <option value="important">🟨 Important</option>
-                <option value="methodology">🟦 Methodology</option>
-                <option value="finding">🟩 Findings</option>
-                <option value="quote">🩷 Direct Quote</option>
-            </select>
+    <section class="workspace">
+      <h2>Reading Notes</h2>
 
-            <input type="text" id="noteArticle" placeholder="Article / Source, e.g., Chong & Graham (2013)">
-            <input type="text" id="notePage" placeholder="Page number">
-            <input type="text" id="noteTags" placeholder="Tags, e.g., #ESL #SPED #CaseStudy">
+      <label>Summary</label>
+      <textarea id="summary" placeholder="Write the article summary here..."></textarea>
 
-            <div class="toolbar">
-                <button onclick="formatText('bold')"><b>B</b></button>
-                <button onclick="formatText('italic')"><i>I</i></button>
-                <button onclick="formatText('underline')"><u>U</u></button>
-                <button onclick="formatText('insertUnorderedList')">• List</button>
-                <button onclick="formatText('insertOrderedList')">1. List</button>
-            </div>
+      <label>Important Findings</label>
+      <textarea id="findings" placeholder="List the important findings..."></textarea>
 
-            <div id="noteInput" contenteditable="true" class="rich-editor"></div>
+      <label>Direct Quotes</label>
+      <textarea id="quotes" placeholder="Paste short direct quotes here..."></textarea>
 
-            <button onclick="saveNote()" id="saveNoteBtn">Save Note</button>
-            <button onclick="cancelEdit()" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
-            <button onclick="clearNotes()">Clear All Notes</button>
+      <label>Reflection / My Understanding</label>
+      <textarea id="reflection" placeholder="What did you understand from this article?"></textarea>
 
-            <h3>Saved Notes</h3>
+      <label>Possible Use in My Research</label>
+      <textarea id="useInResearch" placeholder="How can this help your Chapter 2, framework, gap, or methodology?"></textarea>
 
-            <input type="text" id="noteSearch" placeholder="Search notes..." oninput="displayNotes()">
+      <label>APA 7 Citation</label>
+      <textarea id="apa" placeholder="Write or paste APA 7 citation here..."></textarea>
 
-            <div class="note-workspace">
-                <div class="color-sidebar">
-                    <button onclick="setNoteFilter('all')">All</button>
-                    <button onclick="setNoteFilter('important')">🟨 Important</button>
-                    <button onclick="setNoteFilter('methodology')">🟦 Methodology</button>
-                    <button onclick="setNoteFilter('finding')">🟩 Findings</button>
-                    <button onclick="setNoteFilter('quote')">🩷 Quotes</button>
-                    <button onclick="setNoteFilter('general')">⚪ General</button>
-                </div>
+      <div id="status"></div>
+    </section>
+  </main>
 
-                <div id="notesList" class="note-list"></div>
-            </div>
-        </div>
-
-        <div id="matrixTab" class="tab-content">
-            <h2>Research Matrix</h2>
-
-            <input type="text" id="author" placeholder="Author">
-            <input type="text" id="year" placeholder="Year">
-            <input type="text" id="purpose" placeholder="Purpose / Title">
-            <input type="text" id="method" placeholder="Research Method">
-            <textarea id="findings" placeholder="Key Findings"></textarea>
-            <textarea id="relevance" placeholder="Relevance to Your Study"></textarea>
-
-            <button onclick="addMatrixEntry()">Add Matrix Entry</button>
-            <button onclick="clearMatrix()">Clear Matrix</button>
-
-            <input type="text" id="matrixSearch" placeholder="Search matrix..." oninput="displayMatrix()">
-
-            <button onclick="sortMatrixByAuthor()">Sort by Author</button>
-            <button onclick="sortMatrixByYear()">Sort by Year</button>
-
-            <table id="matrixTable">
-                <thead>
-                    <tr>
-                        <th>Fav</th>
-                        <th>Author</th>
-                        <th>Year</th>
-                        <th>Purpose / Title</th>
-                        <th>Method</th>
-                        <th>Findings</th>
-                        <th>Relevance</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-
-            <button onclick="exportData()">Export Research Data to Word</button>
-        </div>
-
-        <div id="favoritesTab" class="tab-content">
-            <h2>Favorite Articles</h2>
-            <div id="favoritesList"></div>
-        </div>
-
-        <div id="apaTab" class="tab-content">
-            <h2>APA 7 Citation Generator</h2>
-
-            <input type="text" id="citeAuthor" placeholder="Reference Author(s)">
-            <input type="text" id="citeShortAuthor" placeholder="In-text Author(s), e.g., Chong & Graham">
-            <input type="text" id="citeYear" placeholder="Year">
-            <input type="text" id="citeTitle" placeholder="Article Title">
-            <input type="text" id="citeJournal" placeholder="Journal Name">
-            <input type="text" id="citeVolume" placeholder="Volume">
-            <input type="text" id="citeIssue" placeholder="Issue">
-            <input type="text" id="citePages" placeholder="Pages">
-            <input type="text" id="citeDOI" placeholder="DOI or URL">
-
-            <textarea id="quoteText" placeholder="Paste specific sentence or direct quote here..."></textarea>
-            <input type="text" id="citePage" placeholder="Page Number">
-
-            <button onclick="generateReferenceCitation()">Generate Reference List Citation</button>
-            <button onclick="generateNarrativeCitation()">Generate Narrative Citation</button>
-            <button onclick="generateParentheticalCitation()">Generate Parenthetical Citation</button>
-            <button onclick="generateDirectQuoteCitation()">Generate Direct Quote Citation</button>
-            <button onclick="saveCitation()">Save Citation</button>
-            <button onclick="clearCitationFields()">Clear Citation Fields</button>
-
-            <textarea id="citationOutput" placeholder="Generated citation will appear here..." readonly></textarea>
-        </div>
-
-        <div id="citationsTab" class="tab-content">
-            <h2>Saved Citations</h2>
-            <div id="savedCitationsList"></div>
-            <button onclick="clearSavedCitations()">Clear All Saved Citations</button>
-        </div>
-
-        <div id="litReviewTab" class="tab-content">
-            <h2>Literature Review Builder</h2>
-
-            <button onclick="generateLiteratureReview()">Generate Literature Review Draft</button>
-            <button onclick="generateSynthesis()">Generate Synthesis</button>
-            <button onclick="copyLiteratureReview()">Copy Draft</button>
-            <button onclick="clearLiteratureReview()">Clear Draft</button>
-
-            <textarea id="literatureReviewOutput" placeholder="Generated literature review will appear here..."></textarea>
-        </div>
-
-        <div id="gapTab" class="tab-content">
-            <h2>Research Gap Finder</h2>
-
-            <textarea id="studyTopic" placeholder="Type your study topic here..."></textarea>
-
-            <button onclick="generateResearchGap()">Generate Research Gap</button>
-            <button onclick="copyResearchGap()">Copy Research Gap</button>
-
-            <textarea id="researchGapOutput" placeholder="Generated research gap will appear here..."></textarea>
-        </div>
-
-    </div>
-
-</div>
-
-<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
-<script src="script.js"></script>
-
+  <script src="./script.js?v=30"></script>
 </body>
 </html>
