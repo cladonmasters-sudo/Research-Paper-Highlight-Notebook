@@ -103,6 +103,15 @@ function fillArticle(article) {
   setInput("apa", article.apa);
 }
 
+function loadPDF() {
+  const file = document.getElementById("pdfUpload").files[0];
+
+  if (!file) return;
+
+  const fileURL = URL.createObjectURL(file);
+  document.getElementById("pdfFrame").src = fileURL;
+}
+
 function formatText(text) {
   if (!text) return "";
   return text.replace(/\n/g, "<br>");
