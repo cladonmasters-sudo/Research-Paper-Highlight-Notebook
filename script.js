@@ -22,9 +22,13 @@ function saveArticles(articles) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
 }
 
+function makeId(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
 function getCurrentArticle() {
   return {
-    id: getInput("title").toLowerCase().replace(/\s+/g, "-") || Date.now().toString(),
+    id: makeId(getInput("title")) || Date.now().toString(),
     title: getInput("title"),
     authors: getInput("authors"),
     year: getInput("year"),
@@ -60,6 +64,7 @@ function saveArticle() {
 
   saveArticles(articles);
   showStatus("Article notes saved successfully.");
+  searchNotes();
 }
 
 function loadArticle() {
@@ -70,7 +75,7 @@ function loadArticle() {
     return;
   }
 
-  const id = title.toLowerCase().replace(/\s+/g, "-");
+  const id = makeId(title);
   const articles = getArticles();
   const article = articles.find(item => item.id === id);
 
@@ -79,6 +84,12 @@ function loadArticle() {
     return;
   }
 
+  fillArticle(article);
+  showStatus("Saved notes loaded.");
+}
+
+function fillArticle(article) {
+  setInput("title", article.title);
   setInput("authors", article.authors);
   setInput("year", article.year);
   setInput("journal", article.journal);
@@ -90,8 +101,11 @@ function loadArticle() {
   setInput("reflection", article.reflection);
   setInput("useInResearch", article.useInResearch);
   setInput("apa", article.apa);
+}
 
-  showStatus("Saved notes loaded.");
+function formatText(text) {
+  if (!text) return "";
+  return text.replace(/\n/g, "<br>");
 }
 
 function createWordContent(articles) {
@@ -153,11 +167,6 @@ function createWordContent(articles) {
   return content;
 }
 
-function formatText(text) {
-  if (!text) return "";
-  return text.replace(/\n/g, "<br>");
-}
-
 function downloadWord(filename, content) {
   const blob = new Blob(["\ufeff", content], {
     type: "application/msword"
@@ -206,6 +215,58 @@ function exportBackup() {
   link.click();
 }
 
+function searchNotes() {
+  const query = getInput("searchBox").toLowerCase();
+  const resultsBox = document.getElementById("searchResults");
+
+  if (!query) {
+    resultsBox.innerHTML = "";
+    return;
+  }
+
+  const articles = getArticles();
+
+  const results = articles.filter(article => {
+    const searchableText = `
+      ${article.title}
+      ${article.authors}
+      ${article.year}
+      ${article.journal}
+      ${article.tags}
+      ${article.summary}
+      ${article.findings}
+      ${article.quotes}
+      ${article.reflection}
+      ${article.useInResearch}
+      ${article.apa}
+    `.toLowerCase();
+
+    return searchableText.includes(query);
+  });
+
+  if (results.length === 0) {
+    resultsBox.innerHTML = `<div class="search-item">No matching notes found.</div>`;
+    return;
+  }
+
+  resultsBox.innerHTML = results.map(article => `
+    <div class="search-item" onclick="openSearchResult('${article.id}')">
+      <div class="search-title">${article.title || "Untitled Article"}</div>
+      <div class="search-meta">${article.year || ""} ${article.tags ? "• " + article.tags : ""}</div>
+    </div>
+  `).join("");
+}
+
+function openSearchResult(id) {
+  const articles = getArticles();
+  const article = articles.find(item => item.id === id);
+
+  if (!article) return;
+
+  fillArticle(article);
+  showStatus("Search result opened.");
+}
+
 function recoverOldNotes() {
   let recovered = [];
   const existingArticles = getArticles();
@@ -251,5 +312,5 @@ function recoverOldNotes() {
   }
 
   saveArticles([...existingArticles, ...recovered]);
-  alert(recovered.length + " old note/s recovered. Click Export All Notes to Word.");
+  alert(recovered.length + " old note/s recovered. Use Search Saved Notes or Export All Notes to Word.");
 }
