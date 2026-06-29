@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Research Reading Notebook</title>
-  <link rel="stylesheet" href="./style.css?v=40" />
+  <link rel="stylesheet" href="./styles.css?v=50" />
 </head>
 
 <body>
@@ -48,6 +48,12 @@
       <button onclick="recoverOldNotes()">Recover Old Saved Notes</button>
     </aside>
 
+    <section class="pdf-viewer">
+      <h2>PDF Viewer</h2>
+      <input type="file" id="pdfUpload" accept="application/pdf" onchange="loadPDF()" />
+      <iframe id="pdfFrame"></iframe>
+    </section>
+
     <section class="workspace">
       <h2>Reading Notes</h2>
 
@@ -73,6 +79,6 @@
     </section>
   </main>
 
-  <script src="./script.js?v=40"></script>
+  <script src="./script.js?v=50"></script>
 </body>
 </html>
